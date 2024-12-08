@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14
+    restart: no
+    environment:
+      POSTGRES_USER: movie_system
+      POSTGRES_PASSWORD: movie_password
+      POSTGRES_DB: movie_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
