@@ -1,4 +1,6 @@
 import { registerAs } from '@nestjs/config';
+import { Role } from 'src/user/entities/role.entity';
+import { User } from 'src/user/entities/user.entity';
 
 export default registerAs('database', () => {
   return {
@@ -8,5 +10,7 @@ export default registerAs('database', () => {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    entities: [Role, User],
+    synchronize: true,
   };
 });
