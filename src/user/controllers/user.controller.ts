@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDTO } from '../dtos/create-user.dto';
+import { InsertResult } from 'typeorm';
 
 @Controller('user')
 export class UserController {
@@ -8,6 +9,10 @@ export class UserController {
 
   @Post()
   async createUser(@Body() user: CreateUserDTO): Promise<any> {
-    return this.userService.createUser(user);
+    const result: InsertResult = await this.userService.createUser(user);
+    return {
+      message: 'User created successfully',
+      data: result.generatedMaps,
+    };
   }
 }

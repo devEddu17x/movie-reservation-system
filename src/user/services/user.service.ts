@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InsertResult, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,8 +24,15 @@ export class UserService {
       role: { id: userRole.id },
     });
 
-    const result = this.userRepository.insert(user);
-    console.log(result);
-    return result;
+    try {
+      return await this.userRepository.insert(user);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new HttpException(
+          `User with email <<${userData.email}>> already exists`,
+          409,
+        );
+      }
+    }
   }
 }
