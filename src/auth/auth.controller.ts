@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { InsertResult } from 'typeorm';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
+import { AuthLoginDTO } from './dtos/auth-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,5 +21,11 @@ export class AuthController {
       message: 'User created successfully',
       data: result.generatedMaps,
     };
+  }
+
+  @Post('login')
+  async login(@Body() authData: AuthLoginDTO): Promise<any> {
+    const user = await this.authService.validate(authData);
+    return await this.authService.login(user);
   }
 }
