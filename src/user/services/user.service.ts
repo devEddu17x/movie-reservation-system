@@ -19,7 +19,6 @@ export class UserService {
   async createUser(userDTO: CreateUserDTO): Promise<InsertResult> {
     const { role, ...userData } = userDTO;
 
-    console.log('userData', userData);
     const userRole = this.roleService.getRole(role || RoleType.REGULAR);
 
     const newPassword = await bcrypt.hash(
@@ -27,7 +26,6 @@ export class UserService {
       this.configService.get<number>('auth.rounds'),
     );
 
-    console.log('newPassword ', newPassword);
     const user = this.userRepository.create({
       ...userData,
       password: newPassword,
@@ -36,10 +34,8 @@ export class UserService {
 
     try {
       const result = await this.userRepository.insert(user);
-      console.log('result user service \n', result);
       return result;
     } catch (error) {
-      console.log('error', error.message);
       if (error.code === '23505') {
         throw new HttpException(
           `User with email <<${userData.email}>> already exists`,
@@ -54,6 +50,11 @@ export class UserService {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({
+      relations: {
+        role: true,
+      },
+      where: { email },
+    });
   }
 }

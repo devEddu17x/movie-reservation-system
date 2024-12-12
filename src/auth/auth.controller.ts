@@ -26,6 +26,10 @@ export class AuthController {
   @Post('login')
   async login(@Body() authData: AuthLoginDTO): Promise<any> {
     const user = await this.authService.validate(authData);
-    return await this.authService.login(user);
+    const token = await this.authService.login(user);
+    return {
+      message: 'User logged in successfully',
+      token,
+    };
   }
 }

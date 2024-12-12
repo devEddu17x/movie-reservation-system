@@ -32,7 +32,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    console.log(user);
     return user;
   }
   generateToken(payload: Payload): string {
