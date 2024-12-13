@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { InsertResult, Repository } from 'typeorm';
+import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDTO } from '../dtos/create-user.dto';
@@ -56,5 +56,24 @@ export class UserService {
       },
       where: { email },
     });
+  }
+
+  async promoteToAdmin(id: string): Promise<UpdateResult> {
+    const role = this.roleService.getRole(RoleType.ADMIN);
+    try {
+      const result = await this.userRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({
+          role: { id: role.id },
+        })
+        .where('id = :id', { id })
+        .execute();
+      return result;
+    } catch (error) {
+      if (error.code === '22P02') {
+        throw new HttpException('User not found', 404);
+      }
+    }
   }
 }
