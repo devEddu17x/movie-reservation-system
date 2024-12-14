@@ -6,9 +6,10 @@ import { User } from './entities/user.entity';
 import { Role } from './entities/role.entity';
 import { RoleService } from './services/role.service';
 import { RoleController } from './controllers/role.controller';
+import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role])],
+  imports: [SharedModule, TypeOrmModule.forFeature([User, Role])],
   controllers: [UserController, RoleController],
   providers: [UserService, RoleService],
   exports: [UserService],
