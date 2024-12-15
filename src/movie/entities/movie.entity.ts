@@ -14,6 +14,7 @@ export class Movie {
 
   @Column({
     nullable: false,
+    length: 255,
   })
   title: string;
 
@@ -32,6 +33,12 @@ export class Movie {
     nullable: false,
   })
   duration: string;
+
+  @Column({
+    nullable: false,
+    type: 'int',
+  })
+  year: number;
 
   @ManyToMany(() => Genre)
   @JoinTable()
