@@ -41,6 +41,8 @@ export class UserService {
           `User with email <<${userData.email}>> already exists`,
           409,
         );
+      } else {
+        throw new HttpException('Something went wrong', 500);
       }
     }
   }

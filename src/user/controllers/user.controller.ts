@@ -1,8 +1,8 @@
 import { Controller, Param, Patch, UseGuards } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/shared/guards/roles.guard';
-import { Roles } from 'src/shared/decorators/roles.decorator';
+import { RolesGuard } from 'src/core/shared/guards/roles.guard';
+import { Roles } from 'src/core/shared/decorators/roles.decorator';
 import { RoleType } from '../enums/role-type.enum';
 
 @Controller('user')

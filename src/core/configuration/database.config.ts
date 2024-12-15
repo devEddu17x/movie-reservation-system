@@ -1,4 +1,6 @@
 import { registerAs } from '@nestjs/config';
+import { Genre } from 'src/movie/entities/genre.entity';
+import { Movie } from 'src/movie/entities/movie.entity';
 import { Role } from 'src/user/entities/role.entity';
 import { User } from 'src/user/entities/user.entity';
 
@@ -10,7 +12,7 @@ export default registerAs('database', () => {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [Role, User],
+    entities: [Role, User, Movie, Genre],
     synchronize: true,
   };
 });
