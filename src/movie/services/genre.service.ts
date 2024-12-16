@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { InsertResult, Repository } from 'typeorm';
+import { In, InsertResult, Repository } from 'typeorm';
 import { Genre } from '../entities/genre.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGenreDTO } from '../dtos/create-genre.dto';
@@ -23,5 +23,12 @@ export class GenreService {
         );
       }
     }
+  }
+
+  async findGenres(names: string[]): Promise<Genre[] | null> {
+    const genres = await this.genreRepository.find({
+      where: { name: In(names) },
+    });
+    return genres;
   }
 }
