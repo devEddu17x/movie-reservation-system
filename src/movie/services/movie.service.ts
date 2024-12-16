@@ -23,7 +23,6 @@ export class MovieService {
 
       return result;
     } catch (error) {
-      console.log(error);
       throw new HttpException('Something went wrong', 500);
     }
   }
