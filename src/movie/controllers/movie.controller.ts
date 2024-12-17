@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -17,6 +19,16 @@ import { UpdateMovieDTO } from '../dtos/update-movie.dto';
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
+
+  @Get(':id')
+  async getMovie(@Param('id', ParseUUIDPipe) id: string) {
+    const movie = await this.movieService.getMovie(id);
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
+    return movie;
+  }
+
   @Post()
   @UseGuards(RolesGuard)
   @Roles(RoleType.ADMIN)

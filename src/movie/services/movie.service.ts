@@ -14,6 +14,15 @@ export class MovieService {
     private readonly genreService: GenreService,
   ) {}
 
+  async getMovie(id: string): Promise<Movie> {
+    try {
+      const movie = await this.movieRepository.findOneBy({ id: id });
+      return movie;
+    } catch (error) {
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+
   async createMovie(movie: CreateMovieDTO): Promise<Movie | null> {
     try {
       const genres = await this.genreService.findGenres(movie.genres);
