@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Movie } from '../entities/movie.entity';
@@ -16,7 +16,12 @@ export class MovieService {
 
   async getMovie(id: string): Promise<Movie> {
     try {
-      const movie = await this.movieRepository.findOneBy({ id: id });
+      const movie = await this.movieRepository.findOne({
+        where: { id },
+        relations: {
+          genres: true,
+        },
+      });
       return movie;
     } catch (error) {
       throw new HttpException('Something went wrong', 500);
@@ -37,22 +42,60 @@ export class MovieService {
     }
   }
   async updateMovie(id: string, movie: UpdateMovieDTO): Promise<any> {
-    const genres = await this.genreService.findGenres(movie.genres);
+    if (movie.genres !== undefined && movie.genres.length !== 0) {
+      return await this.updateWithGenres(id, movie);
+    }
+    return await this.updateNoGenres(id, movie);
+  }
 
-    let newMovie = {};
-    if (genres.length === 0) {
-      newMovie = { ...movie };
+  private async updateNoGenres(
+    id: string,
+    movie: UpdateMovieDTO,
+  ): Promise<any> {
+    const movieEntity = new Movie();
+
+    for (const key in movie) {
+      if (movie.hasOwnProperty(key) && movie[key] !== undefined) {
+        movieEntity[key] = movie[key];
+      }
     }
     try {
       const result = await this.movieRepository
         .createQueryBuilder()
         .update(Movie)
-        .set(newMovie)
+        .set(movieEntity)
         .where('id = :id', { id })
         .execute();
       return result;
     } catch (error) {
       console.log(error);
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+
+  private async updateWithGenres(
+    id: string,
+    movie: UpdateMovieDTO,
+  ): Promise<any> {
+    const movieRow = await this.movieRepository.findOneBy({ id });
+    if (!movieRow) {
+      throw new NotFoundException('Movie not found');
+    }
+
+    try {
+      const newGenres = await this.genreService.findGenres(movie.genres);
+      if (newGenres.length !== 0) {
+        movieRow.genres = newGenres;
+      }
+
+      movieRow.description = movie.description ?? movieRow.description;
+      movieRow.duration = movie.duration ?? movieRow.duration;
+      movieRow.posterUrl = movie.posterUrl ?? movieRow.posterUrl;
+      movieRow.title = movie.title ?? movieRow.title;
+      movieRow.year = movie.year ?? movieRow.year;
+
+      return await this.movieRepository.save(movieRow);
+    } catch (error) {
       throw new HttpException('Something went wrong', 500);
     }
   }
