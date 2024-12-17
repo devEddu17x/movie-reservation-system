@@ -12,6 +12,10 @@ export class GenreService {
     private readonly genreRepository: Repository<Genre>,
   ) {}
 
+  async getAllGenres(): Promise<Genre[]> {
+    return await this.genreRepository.find();
+  }
+
   async createGenre(genreDTO: CreateGenreDTO): Promise<InsertResult> {
     try {
       const result = await this.genreRepository.insert(genreDTO);

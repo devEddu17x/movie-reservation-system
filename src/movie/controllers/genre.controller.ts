@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Patch,
@@ -16,12 +17,23 @@ import { RoleType } from 'src/user/enums/role-type.enum';
 import { UpdateGenreDTO } from '../dtos/update-genre.dto';
 
 @Controller('genre')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleType.ADMIN)
 export class GenreController {
   constructor(private readonly genreService: GenreService) {}
 
+  @Get()
+  async getAllGenres() {
+    const genres = await this.genreService.getAllGenres();
+    if (genres.length === 0) {
+      return {
+        message: 'No genres found',
+      };
+    }
+    return genres;
+  }
+
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleType.ADMIN)
   async createGenre(@Body() genre: CreateGenreDTO): Promise<any> {
     const result = await this.genreService.createGenre(genre);
     return {
@@ -30,6 +42,8 @@ export class GenreController {
     };
   }
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleType.ADMIN)
   async updateGenre(
     @Param('id', ParseIntPipe) id: number,
     @Body() genre: UpdateGenreDTO,
