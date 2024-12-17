@@ -15,6 +15,7 @@ import { Roles } from 'src/core/shared/decorators/roles.decorator';
 import { RoleType } from 'src/user/enums/role-type.enum';
 import { RolesGuard } from 'src/core/shared/guards/roles.guard';
 import { UpdateMovieDTO } from '../dtos/update-movie.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('movie')
 export class MovieController {
@@ -30,7 +31,7 @@ export class MovieController {
   }
 
   @Post()
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleType.ADMIN)
   async createMovie(@Body() movie: CreateMovieDTO) {
     const createdMovie = await this.movieService.createMovie(movie);
@@ -41,7 +42,7 @@ export class MovieController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleType.ADMIN)
   async updateMovie(
     @Param('id', ParseUUIDPipe) id: string,
