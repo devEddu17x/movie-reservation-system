@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './core/shared/shared.module';
 import { MovieModule } from './movie/movie.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MovieModule } from './movie/movie.module';
     AuthModule,
     SharedModule,
     MovieModule,
+    RoomModule,
   ],
 })
 export class AppModule {}
