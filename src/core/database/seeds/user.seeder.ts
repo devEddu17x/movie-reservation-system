@@ -1,9 +1,9 @@
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../../../user/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { hash } from 'bcrypt';
-import { Role } from 'src/user/entities/role.entity';
-import { RoleType } from 'src/user/enums/role-type.enum';
+import { Role } from '../../../user/entities/role.entity';
+import { RoleType } from '../../../user/enums/role-type.enum';
 export default class UserSeeder implements Seeder {
   public async run(
     datasource: DataSource,
@@ -12,6 +12,7 @@ export default class UserSeeder implements Seeder {
     const repository = datasource.getRepository(User);
     const roleRepository = datasource.getRepository(Role);
 
+    console.log('seeding admin...');
     const adminData = {
       email: 'admin@admin.com',
       name: 'admin',
@@ -30,7 +31,7 @@ export default class UserSeeder implements Seeder {
     userFactory.setMeta(
       (await roleRepository.findOneBy({ name: RoleType.REGULAR })).id,
     );
-
+    console.log('seeding users...');
     await userFactory.saveMany(20);
   }
 }

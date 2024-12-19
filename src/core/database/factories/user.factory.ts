@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
-import { Role } from 'src/user/entities/role.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Role } from '../../../user/entities/role.entity';
+import { User } from '../../../user/entities/user.entity';
 import { setSeederFactory } from 'typeorm-extension';
 
 export default setSeederFactory(User, async (faker, meta: Role) => {

@@ -1,11 +1,13 @@
 import { config } from 'dotenv';
-import { Genre } from 'src/movie/entities/genre.entity';
-import { Movie } from 'src/movie/entities/movie.entity';
-import { Role } from 'src/user/entities/role.entity';
-import { User } from 'src/user/entities/user.entity';
-import InitSeeder from './seeds/init.seeder';
+import { Genre } from '../../movie/entities/genre.entity';
+import { Movie } from '../../movie/entities/movie.entity';
+import { Role } from '../../user/entities/role.entity';
+import { User } from '../../user/entities/user.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { SeederOptions } from 'typeorm-extension';
+import { runSeeders, SeederOptions } from 'typeorm-extension';
+import userFactory from './factories/user.factory';
+import RoleSeeder from './seeds/role.seeder';
+import UserSeeder from './seeds/user.seeder';
 
 config({ path: '.env.development.local' });
 const options: DataSourceOptions & SeederOptions = {
@@ -18,7 +20,14 @@ const options: DataSourceOptions & SeederOptions = {
   entities: [Role, User, Movie, Genre],
   migrationsTableName: 'migrations',
   migrations: [__dirname + '/../../core/database/migrations/**/*.ts'],
-  seeds: [InitSeeder],
+  seeds: [RoleSeeder, UserSeeder],
+  factories: [userFactory],
 };
 
-export const source = new DataSource(options);
+export const dataSource = new DataSource(options);
+dataSource.initialize().then(async () => {
+  console.log('Database connected');
+  await runSeeders(dataSource);
+  console.log('Database seeded');
+  process.exit();
+});
