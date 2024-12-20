@@ -8,6 +8,9 @@ import { runSeeders, SeederOptions } from 'typeorm-extension';
 import userFactory from './factories/user.factory';
 import RoleSeeder from './seeds/role.seeder';
 import UserSeeder from './seeds/user.seeder';
+import GenreSeeder from './seeds/genre.seeder';
+import MovieSeeder from './seeds/movie.seeder';
+import movieFactory from './factories/movie.factory';
 
 config({ path: '.env.development.local' });
 const options: DataSourceOptions & SeederOptions = {
@@ -20,8 +23,8 @@ const options: DataSourceOptions & SeederOptions = {
   entities: [Role, User, Movie, Genre],
   migrationsTableName: 'migrations',
   migrations: [__dirname + '/../../core/database/migrations/**/*.ts'],
-  seeds: [RoleSeeder, UserSeeder],
-  factories: [userFactory],
+  seeds: [RoleSeeder, UserSeeder, GenreSeeder, MovieSeeder],
+  factories: [userFactory, movieFactory],
 };
 
 export const dataSource = new DataSource(options);
