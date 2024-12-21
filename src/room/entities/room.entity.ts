@@ -8,11 +8,10 @@ export class Room {
   id: number;
 
   @Column({
-    length: 10,
     unique: true,
     nullable: false,
   })
-  name: string;
+  number: number;
 
   @Column({
     type: 'enum',
