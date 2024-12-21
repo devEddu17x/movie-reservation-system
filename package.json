@@ -21,7 +21,8 @@
     "typeorm": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js -d src/core/database/typeorm.config.ts",
     "mig-gen": "npm run typeorm migration:generate -- ",
     "mig-run": "npm run typeorm migration:run",
-    "mig-rev": "npm run typeorm migration:revert"
+    "mig-rev": "npm run typeorm migration:revert",
+    "seed": "ts-node src/core/database/typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
