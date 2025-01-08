@@ -3,7 +3,7 @@ import { Room } from '../../../room/entities/room.entity';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 
-export class SeatSeeder implements Seeder {
+export default class SeatSeeder implements Seeder {
   public async run(database: DataSource): Promise<any> {
     const seatRepository = database.getRepository(Seat);
     const roomsRepository = database.getRepository(Room);
@@ -15,7 +15,7 @@ export class SeatSeeder implements Seeder {
     console.log('seeding seats...');
     for (const room of rooms) {
       // 10 rows and 10 columns for each room
-      const seats: Seat[] = [];
+      const seats = [];
       for (let i = 1; i <= 10; i++) {
         for (let j = 0; j < 10; j++) {
           seats.push({

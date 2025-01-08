@@ -1,49 +1,40 @@
 import { RoomType } from '../../../room/enums/room-type.enum';
 import { Room } from '../../../room/entities/room.entity';
 import { DataSource } from 'typeorm';
+import { Seeder } from 'typeorm-extension';
 
-export default class RoomSeeder {
+export default class RoomSeeder implements Seeder {
   public async run(datasource: DataSource): Promise<any> {
     const repository = datasource.getRepository(Room);
     const rooms = [
       {
-        name: 1,
         type: RoomType.REGULAR,
       },
       {
-        name: 2,
         type: RoomType.REGULAR,
       },
       {
-        name: 3,
         type: RoomType.REGULAR,
       },
       {
-        name: 4,
         type: RoomType.REGULAR,
       },
       {
-        name: 5,
         type: RoomType.REGULAR,
       },
       {
-        name: 6,
         type: RoomType.PRIME,
       },
       {
-        name: 7,
         type: RoomType.PRIME,
       },
       {
-        name: 8,
         type: RoomType.PRIME,
       },
       {
-        name: 9,
         type: RoomType.PRIME,
       },
       {
-        name: 10,
         type: RoomType.PRIME,
       },
     ];
