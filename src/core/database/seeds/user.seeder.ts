@@ -23,7 +23,7 @@ export default class UserSeeder implements Seeder {
       },
     };
 
-    const user = repository.findOneBy({ email: adminData.email });
+    const user = await repository.findOneBy({ email: adminData.email });
     if (!user) {
       await repository.insert(adminData);
     }
