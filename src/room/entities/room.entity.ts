@@ -8,15 +8,8 @@ export class Room {
   id: number;
 
   @Column({
-    unique: true,
-    nullable: false,
-  })
-  number: number;
-
-  @Column({
     type: 'enum',
-    length: 10,
-    unique: true,
+    enum: RoomType,
     nullable: false,
     default: RoomType.REGULAR,
   })

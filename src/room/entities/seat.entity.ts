@@ -1,15 +1,17 @@
-import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Room } from './room.entity';
 
 @Entity()
 export class Seat {
-  @PrimaryColumn({
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column({
     name: 'column_letter',
     type: 'char',
   })
   columnLetter: string;
 
-  @PrimaryColumn({
+  @Column({
     name: 'row_number',
   })
   rowNumber: number;
