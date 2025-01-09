@@ -1,28 +1,28 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Payload } from './interfaces/paylod.interface';
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from './interfaces/paylod.interface';
 import { AuthLoginDTO } from './dtos/auth-login.dto';
 import { UserService } from 'src/user/services/user.service';
 import { User } from 'src/user/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
 
-  async login(user: User) {
-    const payload: Payload = {
-      sub: user.id,
-      name: user.name,
-      role: user.role.name,
-    };
-
-    const token = this.generateToken(payload);
-    return token;
+  async login(authData: AuthLoginDTO) {
+    const user = await this.validateLogin(authData);
+    return await this.generateTokens(user);
   }
-  async validate(authData: AuthLoginDTO) {
+
+  async validateLogin(authData: AuthLoginDTO) {
     const user: User = await this.userService.getUserByEmail(authData.email);
     if (!user) {
       throw new UnauthorizedException('User does not exist');
@@ -35,10 +35,27 @@ export class AuthService {
 
     return user;
   }
-  generateToken(payload: Payload): string {
-    return this.jwtService.sign(payload);
-  }
-  verifyToken(token: string): Payload | null {
-    return this.jwtService.verify(token);
+
+  async generateTokens(
+    user: User,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const accessPayload: AccessTokenPayload = {
+      sub: user.id,
+      name: user.name,
+      role: user.role.name,
+    };
+    const refreshPayload: RefreshTokenPayload = {
+      sub: user.id,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      await this.jwtService.signAsync(accessPayload),
+      await this.jwtService.signAsync(refreshPayload, {
+        secret: this.configService.get<string>('auth.refreshSecret'),
+        expiresIn: this.configService.get<string>('auth.refreshExpiresIn'),
+      }),
+    ]);
+
+    return { accessToken, refreshToken };
   }
 }
