@@ -17,7 +17,10 @@ export class DynamicAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const body = request.body;
 
-    // just in case role is empty or is regular
+    // this happens cause this guard it's used for creating new users
+    // we need to check jwt only in case dto in request has role field and is admin
+    // only an admin can create an admin, so check if role inside jwt is admin
+    // in case role is regular or is empty (taking regular as default in user service) return true
     if (!body.role || body.role === RoleType.REGULAR) {
       return true;
     }
