@@ -60,6 +60,20 @@ export class UserService {
     });
   }
 
+  async getUserById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      relations: {
+        role: true,
+      },
+      where: { id },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+
+    return user;
+  }
   async promoteToAdmin(id: string): Promise<UpdateResult> {
     const role = this.roleService.getRole(RoleType.ADMIN);
     try {
