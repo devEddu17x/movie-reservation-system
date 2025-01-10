@@ -28,8 +28,11 @@ export class AuthService {
       throw new UnauthorizedException('User does not exist');
     }
 
-    const succes = await this.userService.validateUser(user, authData.password);
-    if (!succes) {
+    const isAuthenticated = await this.userService.validateUser(
+      user,
+      authData.password,
+    );
+    if (!isAuthenticated) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
