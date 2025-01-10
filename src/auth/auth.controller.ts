@@ -1,11 +1,12 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user/services/user.service';
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
 import { InsertResult } from 'typeorm';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { AuthLoginDTO } from './dtos/auth-login.dto';
-
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
+import { Request as ExpressRequest } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -35,6 +36,16 @@ export class AuthController {
     };
   }
 
-  @Post('refresh-token')
-  async refreshToken() {}
+  @Post('refresh-tokens')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refreshToken(@Request() req: ExpressRequest) {
+    const { accessToken, refreshToken } = await this.authService.generateTokens(
+      (req as any).user,
+    );
+    return {
+      message: 'Tokens refreshed successfully',
+      accessToken,
+      refreshToken,
+    };
+  }
 }

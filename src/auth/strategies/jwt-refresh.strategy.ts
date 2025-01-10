@@ -23,7 +23,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
 
   async validate(payload: RefreshTokenPayload) {
     // to validate the refresh token, we need to check if the user exists
-    await this.userService.getUserById(payload.sub);
-    return { id: payload.sub };
+    // also we keep user data up to date
+    const user = await this.userService.getUserById(payload.sub);
+    return { id: payload.sub, name: user.name, role: user.role };
   }
 }
