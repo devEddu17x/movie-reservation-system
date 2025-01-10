@@ -41,7 +41,7 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessPayload: AccessTokenPayload = {
       sub: user.id,
-      name: user.name,
+      email: user.email,
       role: user.role.name,
     };
     const refreshPayload: RefreshTokenPayload = {
