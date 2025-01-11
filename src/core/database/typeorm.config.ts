@@ -5,6 +5,7 @@ import { Role } from '../../user/entities/role.entity';
 import { User } from '../../user/entities/user.entity';
 import { Room } from '../../room/entities/room.entity';
 import { Seat } from '../../room/entities/seat.entity';
+import { BlackListRefreshToken } from '../../auth/entities/refresh-token.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
 import RoleSeeder from './seeds/role.seeder';
@@ -24,7 +25,7 @@ const options: DataSourceOptions & SeederOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [Role, User, Movie, Genre, Room, Seat],
+  entities: [Role, User, Movie, Genre, Room, Seat, BlackListRefreshToken],
   migrationsTableName: 'migrations',
   migrations: [__dirname + '/../../core/database/migrations/**/*.ts'],
   seeds: [
