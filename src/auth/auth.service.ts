@@ -8,6 +8,7 @@ import { AuthLoginDTO } from './dtos/auth-login.dto';
 import { UserService } from 'src/user/services/user.service';
 import { User } from 'src/user/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { RefreshTokenService } from './refresh-token.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
   async login(authData: AuthLoginDTO) {
@@ -41,7 +43,22 @@ export class AuthService {
 
   async generateTokens(
     user: User,
+    previousRefreshToken?: string,
+    previousExpiresAt?: Date,
   ): Promise<{ accessToken: string; refreshToken: string }> {
+    if (previousRefreshToken) {
+      if (
+        await this.refreshTokenService.checkIfTokenInBlackList(
+          previousRefreshToken,
+        )
+      ) {
+        throw new UnauthorizedException('Token has been invalidated');
+      }
+      await this.refreshTokenService.addTokenToBlackList(
+        previousRefreshToken,
+        previousExpiresAt,
+      );
+    }
     const accessPayload: AccessTokenPayload = {
       sub: user.id,
       email: user.email,

@@ -7,10 +7,14 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BlackListRefreshToken } from './entities/refresh-token.entity';
+import { RefreshTokenService } from './refresh-token.service';
 
 @Module({
   imports: [
     UserModule,
+    TypeOrmModule.forFeature([BlackListRefreshToken]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
@@ -23,6 +27,11 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
+  providers: [
+    AuthService,
+    RefreshTokenService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+  ],
 })
 export class AuthModule {}
