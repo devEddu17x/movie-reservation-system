@@ -68,7 +68,6 @@ export class MovieService {
         .execute();
       return result;
     } catch (error) {
-      console.log(error);
       throw new HttpException('Something went wrong', 500);
     }
   }
