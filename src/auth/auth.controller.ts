@@ -40,7 +40,9 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   async refreshToken(@Request() req: ExpressRequest) {
     const { accessToken, refreshToken } = await this.authService.generateTokens(
-      (req as any).user,
+      (req.user as any).token,
+      req.headers.authorization.split(' ')[1],
+      (req.user as any).expiresAt,
     );
     return {
       message: 'Tokens refreshed successfully',

@@ -25,6 +25,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
     // to validate the refresh token, we need to check if the user exists
     // also we keep user data up to date
     const user = await this.userService.getUserById(payload.sub);
-    return { id: payload.sub, email: user.email, role: user.role };
+    return {
+      token: {
+        id: payload.sub,
+        email: user.email,
+        role: user.role,
+      },
+      expiresAt: new Date(payload.exp * 1000),
+    };
   }
 }
