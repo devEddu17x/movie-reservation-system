@@ -8,6 +8,7 @@ import { MovieModule } from './movie/movie.module';
 import { RoomModule } from './room/room.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ShowtimeModule } from './showtime/showtime.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       { name: 'long', ttl: 60000, limit: 60 },
     ]),
     ScheduleModule.forRoot(),
+    ShowtimeModule,
   ],
 })
 export class AppModule {}

@@ -3,10 +3,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Genre } from './genre.entity';
 import { MovieStatus } from '../enums/movie-status.enum';
+import { Showtime } from 'src/showtime/entities/showtime.entity';
 
 @Entity()
 export class Movie {
@@ -52,4 +54,7 @@ export class Movie {
   @ManyToMany(() => Genre)
   @JoinTable()
   genres: Genre[];
+
+  @OneToMany(() => Showtime, (showtime) => showtime.movie)
+  showtimes?: Showtime[];
 }
