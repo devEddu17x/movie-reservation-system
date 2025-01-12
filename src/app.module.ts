@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './core/shared/shared.module';
 import { MovieModule } from './movie/movie.module';
 import { RoomModule } from './room/room.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -16,6 +17,12 @@ import { RoomModule } from './room/room.module';
     SharedModule,
     MovieModule,
     RoomModule,
+    ThrottlerModule.forRoot([
+      { name: 'default', ttl: 1000, limit: 3 },
+      { name: 'small', ttl: 2000, limit: 6 },
+      { name: 'medium', ttl: 10000, limit: 20 },
+      { name: 'long', ttl: 60000, limit: 60 },
+    ]),
   ],
 })
 export class AppModule {}

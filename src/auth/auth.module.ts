@@ -10,6 +10,8 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlackListRefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenService } from './refresh-token.service';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -32,6 +34,12 @@ import { RefreshTokenService } from './refresh-token.service';
     RefreshTokenService,
     JwtStrategy,
     JwtRefreshStrategy,
+    // This code below adds the ThrottlerGuard to the providers array
+    // this way is for use Throttle in every controllers's route
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AuthModule {}
