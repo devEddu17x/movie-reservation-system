@@ -1,0 +1,5 @@
+export enum MovieStatus {
+  AVAILABLE = 'AVAILABLE',
+  UNAVAILABLE = 'UNAVAILABLE',
+  COMING_SOON = 'COMING_SOON',
+}

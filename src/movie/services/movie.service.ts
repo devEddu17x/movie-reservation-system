@@ -5,6 +5,7 @@ import { Movie } from '../entities/movie.entity';
 import { CreateMovieDTO } from '../dtos/create-movie.dto';
 import { GenreService } from './genre.service';
 import { UpdateMovieDTO } from '../dtos/update-movie.dto';
+import { MovieStatus } from '../enums/movie-status.enum';
 
 @Injectable()
 export class MovieService {
@@ -14,7 +15,32 @@ export class MovieService {
     private readonly genreService: GenreService,
   ) {}
 
-  async getMovie(id: string): Promise<Movie> {
+  async getMovies(): Promise<Movie[]> {
+    try {
+      const movies = await this.movieRepository
+        .createQueryBuilder('movie')
+        .leftJoin('movie.genres', 'genre')
+        .where('movie.status = :status', { status: MovieStatus.AVAILABLE })
+        .select([
+          'movie.id as id',
+          'movie.title as title',
+          'movie.description as description',
+          'movie.posterUrl as posterUrl',
+          'movie.duration as duration',
+          'movie.year as year',
+          'movie.status as status',
+          'array_agg(genre.name) as genres',
+        ])
+        .groupBy('movie.id')
+        .getRawMany();
+
+      return movies;
+    } catch (error) {
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+
+  async getMovie(id: string): Promise<Movie | null> {
     try {
       const movie = await this.movieRepository.findOne({
         where: { id },
@@ -22,6 +48,12 @@ export class MovieService {
           genres: true,
         },
       });
+
+      if (!movie || movie.status !== MovieStatus.AVAILABLE) {
+        return null;
+      }
+      (movie as any).genres = movie.genres.map((genre) => genre.name);
+
       return movie;
     } catch (error) {
       throw new HttpException('Something went wrong', 500);

@@ -16,13 +16,23 @@ import { RoleType } from 'src/user/enums/role-type.enum';
 import { RolesGuard } from 'src/core/shared/guards/roles.guard';
 import { UpdateMovieDTO } from '../dtos/update-movie.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Movie } from '../entities/movie.entity';
 
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
+  @Get()
+  async getMovies(): Promise<Movie[]> {
+    const movies = await this.movieService.getMovies();
+    if (movies.length === 0) {
+      throw new NotFoundException('No movies found');
+    }
+    return movies;
+  }
+
   @Get(':id')
-  async getMovie(@Param('id', ParseUUIDPipe) id: string) {
+  async getMovie(@Param('id', ParseUUIDPipe) id: string): Promise<Movie> {
     const movie = await this.movieService.getMovie(id);
     if (!movie) {
       throw new NotFoundException('Movie not found');

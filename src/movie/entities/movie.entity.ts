@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Genre } from './genre.entity';
+import { MovieStatus } from '../enums/movie-status.enum';
 
 @Entity()
 export class Movie {
@@ -39,6 +40,14 @@ export class Movie {
     type: 'int',
   })
   year: number;
+
+  @Column({
+    type: 'enum',
+    enum: MovieStatus,
+    default: MovieStatus.AVAILABLE,
+    nullable: false,
+  })
+  status: MovieStatus;
 
   @ManyToMany(() => Genre)
   @JoinTable()
