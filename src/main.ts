@@ -12,6 +12,11 @@ async function bootstrap() {
   // get configService
   const configService = app.get(ConfigService);
   const PORT = configService.get('PORT');
+
+  app.enableCors({
+    origin: true, // this must be changed to the frontend domain
+    credentials: true,
+  });
   await app.listen(PORT || 3000);
   console.log(`Application is running on: http://localhost:${PORT}`);
 }

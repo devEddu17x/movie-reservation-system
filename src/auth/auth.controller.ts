@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from 'src/user/services/user.service';
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from 'src/user/dtos/create-user.dto';
@@ -6,7 +13,7 @@ import { InsertResult } from 'typeorm';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { AuthLoginDTO } from './dtos/auth-login.dto';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
-import { Request as ExpressRequest } from 'express';
+import { Request as ExpressRequest, Response } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -25,29 +32,33 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() authData: AuthLoginDTO): Promise<any> {
-    const { accessToken, refreshToken } =
-      await this.authService.login(authData);
+  async login(
+    @Body() authData: AuthLoginDTO,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const { accessToken } = await this.authService.login(authData, res);
 
     return {
       message: 'User logged in successfully',
       accessToken,
-      refreshToken,
     };
   }
 
   @Post('refresh-tokens')
   @UseGuards(JwtRefreshAuthGuard)
-  async refreshToken(@Request() req: ExpressRequest) {
-    const { accessToken, refreshToken } = await this.authService.generateTokens(
+  async refreshToken(
+    @Request() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken } = await this.authService.generateTokens(
       (req.user as any).token,
-      req.headers.authorization.split(' ')[1],
+      res,
+      (req as any).refreshTokenCookie,
       (req.user as any).expiresAt,
     );
     return {
       message: 'Tokens refreshed successfully',
       accessToken,
-      refreshToken,
     };
   }
 }

@@ -9,6 +9,8 @@ import { UserService } from 'src/user/services/user.service';
 import { User } from 'src/user/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenService } from './refresh-token.service';
+import { Response } from 'express';
+import { refreshTokenCookie } from './config/refresh-token-cookie.config';
 
 @Injectable()
 export class AuthService {
@@ -19,9 +21,9 @@ export class AuthService {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async login(authData: AuthLoginDTO) {
+  async login(authData: AuthLoginDTO, res: Response) {
     const user = await this.validateLogin(authData);
-    return await this.generateTokens(user);
+    return await this.generateTokens(user, res);
   }
 
   async validateLogin(authData: AuthLoginDTO) {
@@ -43,9 +45,11 @@ export class AuthService {
 
   async generateTokens(
     user: User,
+    res: Response,
     previousRefreshToken?: string,
     previousExpiresAt?: Date,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string }> {
+    // in login we don't have previous refresh token, so we don't need to check it
     if (previousRefreshToken) {
       if (
         await this.refreshTokenService.checkIfTokenInBlackList(
@@ -76,6 +80,12 @@ export class AuthService {
       }),
     ]);
 
-    return { accessToken, refreshToken };
+    res.cookie(
+      refreshTokenCookie.name,
+      refreshToken,
+      refreshTokenCookie.options,
+    );
+
+    return { accessToken };
   }
 }
