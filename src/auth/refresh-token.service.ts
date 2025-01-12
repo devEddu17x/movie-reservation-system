@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlackListRefreshToken } from './entities/refresh-token.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class RefreshTokenService {
@@ -24,5 +25,11 @@ export class RefreshTokenService {
     });
 
     return result.length !== 0;
+  }
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  async clearRefreshTokens() {
+    await this.refreshTokenRepository.delete({
+      expiresAt: LessThanOrEqual(new Date()),
+    });
   }
 }
