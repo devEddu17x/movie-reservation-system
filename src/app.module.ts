@@ -7,6 +7,7 @@ import { SharedModule } from './core/shared/shared.module';
 import { MovieModule } from './movie/movie.module';
 import { RoomModule } from './room/room.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       { name: 'medium', ttl: 10000, limit: 20 },
       { name: 'long', ttl: 60000, limit: 60 },
     ]),
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}
