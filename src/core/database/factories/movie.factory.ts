@@ -7,7 +7,10 @@ export default setSeederFactory(Movie, (faker, meta: Genre[]) => {
   movie.title = faker.lorem.sentence();
   movie.description = faker.lorem.paragraph();
   movie.posterUrl = faker.image.url();
-  movie.duration = `${faker.number.int({ min: 60, max: 180 })} min`;
+  movie.duration =
+    `${faker.number.int({ min: 60, max: 180 })}` +
+    ':' +
+    `${faker.number.int({ min: 0, max: 59 })}`;
   movie.year = faker.number.int({ min: 1950, max: 2023 });
 
   const genres = faker.helpers.arrayElements(

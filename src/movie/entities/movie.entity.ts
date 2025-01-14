@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Genre } from './genre.entity';
 import { MovieStatus } from '../enums/movie-status.enum';
-import { Showtime } from 'src/showtime/entities/showtime.entity';
+import { Showtime } from '../../showtime/entities/showtime.entity';
 
 @Entity()
 export class Movie {

@@ -5,6 +5,8 @@ import { Role } from '../../user/entities/role.entity';
 import { User } from '../../user/entities/user.entity';
 import { Room } from '../../room/entities/room.entity';
 import { Seat } from '../../room/entities/seat.entity';
+import { Showtime } from '../../showtime/entities/showtime.entity';
+
 import * as readline from 'node:readline/promises';
 
 async function ask(): Promise<boolean> {
@@ -43,6 +45,7 @@ async function clearDatabase() {
       await transactionalEntityManager.delete(Movie, {});
       await transactionalEntityManager.delete(User, {});
       await transactionalEntityManager.delete(Role, {});
+      await transactionalEntityManager.delete(Showtime, {});
 
       console.log('Data deleted successfully.');
     } catch (error) {

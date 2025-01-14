@@ -1,4 +1,4 @@
-import { Movie } from 'src/movie/entities/movie.entity';
+import { Movie } from '../../movie/entities/movie.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
