@@ -12,5 +12,6 @@ import { GenreController } from './controllers/genre.controller';
   imports: [SharedModule, TypeOrmModule.forFeature([Movie, Genre])],
   controllers: [MovieController, GenreController],
   providers: [MovieService, GenreService],
+  exports: [MovieService],
 })
 export class MovieModule {}
