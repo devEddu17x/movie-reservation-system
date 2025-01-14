@@ -16,6 +16,7 @@ export function IsFutureDate(
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
+          value = new Date(value);
           const now = new Date();
           const minDate = new Date(
             now.getTime() + hoursFromNow * 60 * 60 * 1000,

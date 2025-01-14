@@ -13,6 +13,7 @@ export function HasTimePrecision(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
+          value = new Date(value);
           if (!(value instanceof Date)) return false;
           return (
             value.getHours() !== undefined && value.getMinutes() !== undefined
