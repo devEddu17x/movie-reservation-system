@@ -1,4 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Room } from '../entities/room.entity';
+import { CreateRoomDto } from 'src/room/dto/create-room.dto';
 
 @Injectable()
-export class RoomService {}
+export class RoomService {
+  constructor(
+    @InjectRepository(Room)
+    private readonly roomRepository: Repository<Room>,
+  ) {}
+
+  async createRoom(roomDTO: CreateRoomDto): Promise<Room> {
+    try {
+      const room: Room = this.roomRepository.create(roomDTO);
+      return await this.roomRepository.save(room);
+    } catch (e) {
+      if (e.code === '23505') {
+        throw new HttpException('Room already exists', 409);
+      }
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+
+  async getRoom(roomId: number): Promise<Room> {
+    const room = await this.roomRepository.findOne({ where: { id: roomId } });
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+    return room;
+  }
+
+  async getRooms(): Promise<Room[]> {
+    const rooms = await this.roomRepository.find();
+    if (rooms.length === 0) {
+      throw new HttpException('Rooms not found', 404);
+    }
+    return rooms;
+  }
+}

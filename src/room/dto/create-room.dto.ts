@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { RoomType } from '../enums/room-type.enum';
@@ -11,8 +12,8 @@ import { CreateSeatDto } from './create-seat.dto';
 
 export class CreateRoomDto {
   @IsNumber()
-  @IsNotEmpty()
-  number: number;
+  @Min(1)
+  id?: number;
 
   @IsEnum(RoomType)
   @IsNotEmpty()

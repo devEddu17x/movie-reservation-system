@@ -1,4 +1,36 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { CreateRoomDto } from '../dto/create-room.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/core/shared/decorators/roles.decorator';
+import { RolesGuard } from 'src/core/shared/guards/roles.guard';
+import { RoleType } from 'src/user/enums/role-type.enum';
+import { RoomService } from '../services/room.service';
 
 @Controller('room')
-export class RoomController {}
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleType.ADMIN)
+export class RoomController {
+  constructor(private readonly roomService: RoomService) {}
+  @Post()
+  async createRoom(@Body() roomDTO: CreateRoomDto) {
+    return await this.roomService.createRoom(roomDTO);
+  }
+
+  @Get(':id')
+  async getRoom(@Param('id', ParseIntPipe) roomId: number) {
+    return await this.roomService.getRoom(roomId);
+  }
+
+  @Get()
+  async getRooms() {
+    return await this.roomService.getRooms();
+  }
+}
