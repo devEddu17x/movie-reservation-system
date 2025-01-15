@@ -1,3 +1,4 @@
+import { Room } from '../../room/entities/room.entity';
 import { Movie } from '../../movie/entities/movie.entity';
 import {
   Entity,
@@ -38,4 +39,6 @@ export class Showtime {
 
   @ManyToOne(() => Movie, (movie) => movie.showtimes)
   movie: Movie;
+  @ManyToOne(() => Room)
+  room: Room;
 }

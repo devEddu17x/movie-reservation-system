@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsUUID, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsUUID, Max, Min } from 'class-validator';
 import { IsFutureDate } from 'src/utils/future-dates.custom-validator';
 import { HasTimePrecision } from 'src/utils/has-time-precision.custom-validator';
 
@@ -18,4 +18,8 @@ export class CreateShowtimeDto {
   @IsNotEmpty()
   @IsUUID()
   movieId: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  roomId: number;
 }
