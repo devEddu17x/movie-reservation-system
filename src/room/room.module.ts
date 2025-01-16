@@ -9,5 +9,6 @@ import { SharedModule } from 'src/core/shared/shared.module';
   imports: [SharedModule, TypeOrmModule.forFeature([Room])],
   providers: [RoomService],
   controllers: [RoomController],
+  exports: [RoomService],
 })
 export class RoomModule {}

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -26,7 +27,12 @@ export class RoomController {
 
   @Get(':id')
   async getRoom(@Param('id', ParseIntPipe) roomId: number) {
-    return await this.roomService.getRoom(roomId);
+    const room = await this.roomService.getRoom(roomId);
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    return room;
   }
 
   @Get()
