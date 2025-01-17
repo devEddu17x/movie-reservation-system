@@ -19,6 +19,7 @@ import { ShowtimeModule } from './showtime/showtime.module';
     SharedModule,
     MovieModule,
     RoomModule,
+    ShowtimeModule,
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 1000, limit: 3 },
       { name: 'small', ttl: 2000, limit: 6 },
@@ -26,7 +27,6 @@ import { ShowtimeModule } from './showtime/showtime.module';
       { name: 'long', ttl: 60000, limit: 60 },
     ]),
     ScheduleModule.forRoot(),
-    ShowtimeModule,
   ],
 })
 export class AppModule {}

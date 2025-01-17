@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../entities/room.entity';
 import { CreateRoomDto } from 'src/room/dto/create-room.dto';
+import { Showtime } from 'src/showtime/entities/showtime.entity';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,
+    @InjectRepository(Showtime)
+    private readonly showtimeRepository: Repository<Showtime>,
   ) {}
 
   async createRoom(roomDTO: CreateRoomDto): Promise<Room> {
@@ -23,8 +26,16 @@ export class RoomService {
     }
   }
 
-  async getRoom(roomId: number): Promise<Room> {
-    return await this.roomRepository.findOne({ where: { id: roomId } });
+  async getRoom(roomId: number): Promise<Room & { showtimes?: Showtime[] }> {
+    const [room, showtimes] = await Promise.all([
+      await this.roomRepository.findOne({ where: { id: roomId } }),
+      await this.getShowtimesInRoom(roomId),
+    ]);
+
+    if (!room) {
+      throw new HttpException('Room not found', 404);
+    }
+    return showtimes.length > 0 ? { ...room, showtimes } : room;
   }
 
   async getRooms(): Promise<Room[]> {
@@ -33,5 +44,18 @@ export class RoomService {
       throw new HttpException('Rooms not found', 404);
     }
     return rooms;
+  }
+
+  async getShowtimesInRoom(roomId: number): Promise<Showtime[]> {
+    try {
+      const showtimes = await this.showtimeRepository.find({
+        where: { room: { id: roomId } },
+        relations: ['movie'],
+      });
+
+      return showtimes;
+    } catch (error) {
+      throw new HttpException('Something went wrong', 500);
+    }
   }
 }

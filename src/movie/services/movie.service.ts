@@ -46,6 +46,7 @@ export class MovieService {
         where: { id },
         relations: {
           genres: true,
+          showtimes: true,
         },
       });
 
