@@ -15,13 +15,6 @@ export class Room {
   })
   type: RoomType;
 
-  @Column({
-    name: 'block_until',
-    nullable: true,
-    type: 'timestamp',
-  })
-  blockUntil: Date;
-
   @OneToMany(() => Seat, (seat) => seat.room)
   seats: Seat[];
 }
