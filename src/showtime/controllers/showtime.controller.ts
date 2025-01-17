@@ -7,7 +7,8 @@ export class ShowtimeController {
   constructor(private readonly showtimeService: ShowtimeService) {}
   @Post()
   async createShowtime(@Body() createShowtimeDTO: CreateShowtimeDto) {
-    await this.showtimeService.createShowtime(createShowtimeDTO);
-    return { message: 'Showtime created' };
+    const showtime =
+      await this.showtimeService.createShowtime(createShowtimeDTO);
+    return { message: 'Showtime created', showtime };
   }
 }
