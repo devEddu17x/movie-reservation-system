@@ -1,9 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Room } from '../entities/room.entity';
 import { CreateRoomDto } from 'src/room/dto/create-room.dto';
-import { UpdateRoomDTO } from '../dto/update-room.dto';
 
 @Injectable()
 export class RoomService {
@@ -34,17 +33,5 @@ export class RoomService {
       throw new HttpException('Rooms not found', 404);
     }
     return rooms;
-  }
-
-  async updateRoom(
-    roomId: number,
-    roomDTO: UpdateRoomDTO,
-  ): Promise<UpdateResult> {
-    const room = this.roomRepository.create(roomDTO);
-    try {
-      return await this.roomRepository.update(roomId, room);
-    } catch (e) {
-      throw new HttpException('Something went wrong', 500);
-    }
   }
 }
