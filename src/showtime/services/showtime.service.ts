@@ -1,5 +1,5 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, MoreThanOrEqual, Repository } from 'typeorm';
 import { Showtime } from '../entities/showtime.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MovieService } from 'src/movie/services/movie.service';
@@ -141,6 +141,29 @@ export class ShowtimeService {
         movie: { id: movie.id },
       });
     } catch (e) {
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+
+  async getShowtime(showtimeId: string): Promise<Showtime> {
+    try {
+      return await this.showtimeRepository.findOne({
+        where: { id: showtimeId },
+        relations: ['movie', 'room'],
+      });
+    } catch (error) {
+      throw new HttpException('Something went wrong', 500);
+    }
+  }
+  async getShowtimes(): Promise<Showtime[]> {
+    try {
+      return await this.showtimeRepository.find({
+        where: {
+          startDate: MoreThanOrEqual(new Date()),
+        },
+        relations: ['movie', 'room'],
+      });
+    } catch (error) {
       throw new HttpException('Something went wrong', 500);
     }
   }
