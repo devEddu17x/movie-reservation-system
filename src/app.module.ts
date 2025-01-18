@@ -20,12 +20,15 @@ import { ShowtimeModule } from './showtime/showtime.module';
     MovieModule,
     RoomModule,
     ShowtimeModule,
-    ThrottlerModule.forRoot([
-      { name: 'default', ttl: 1000, limit: 3 },
-      { name: 'small', ttl: 2000, limit: 6 },
-      { name: 'medium', ttl: 10000, limit: 20 },
-      { name: 'long', ttl: 60000, limit: 60 },
-    ]),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        { name: 'default', ttl: 1000, limit: 3 },
+        { name: 'small', ttl: 2000, limit: 6 },
+        { name: 'medium', ttl: 10000, limit: 20 },
+        { name: 'long', ttl: 60000, limit: 60 },
+      ],
+      errorMessage: 'Request limit exceeded',
+    }),
     ScheduleModule.forRoot(),
   ],
 })
