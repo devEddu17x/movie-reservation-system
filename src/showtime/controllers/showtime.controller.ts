@@ -6,13 +6,21 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ShowtimeService } from '../services/showtime.service';
 import { CreateShowtimeDto } from '../dtos/create-showtime.dto';
+import { RolesGuard } from 'src/core/shared/guards/roles.guard';
+import { Roles } from 'src/core/shared/decorators/roles.decorator';
+import { RoleType } from 'src/user/enums/role-type.enum';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleType.ADMIN)
 @Controller('showtime')
 export class ShowtimeController {
   constructor(private readonly showtimeService: ShowtimeService) {}
+
   @Post()
   async createShowtime(@Body() createShowtimeDTO: CreateShowtimeDto) {
     const showtime =
