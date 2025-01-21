@@ -2,6 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { BlackListRefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Genre } from 'src/movie/entities/genre.entity';
 import { Movie } from 'src/movie/entities/movie.entity';
+import { Reservation } from 'src/reservation/entities/reservation.entity';
 import { Room } from 'src/room/entities/room.entity';
 import { Seat } from 'src/room/entities/seat.entity';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
@@ -25,6 +26,7 @@ export default registerAs('database', () => {
       Seat,
       BlackListRefreshToken,
       Showtime,
+      Reservation,
     ],
     synchronize: true,
   };

@@ -7,6 +7,7 @@ import { Room } from '../../room/entities/room.entity';
 import { Seat } from '../../room/entities/seat.entity';
 import { BlackListRefreshToken } from '../../auth/entities/refresh-token.entity';
 import { Showtime } from '../../showtime/entities/showtime.entity';
+import { Reservation } from '../../reservation/entities/reservation.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
 import RoleSeeder from './seeds/role.seeder';
@@ -35,6 +36,7 @@ const options: DataSourceOptions & SeederOptions = {
     Seat,
     BlackListRefreshToken,
     Showtime,
+    Reservation,
   ],
   migrationsTableName: 'migrations',
   migrations: [__dirname + '/../../core/database/migrations/**/*.ts'],
