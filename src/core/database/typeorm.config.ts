@@ -8,7 +8,7 @@ import { Seat } from '../../room/entities/seat.entity';
 import { BlackListRefreshToken } from '../../auth/entities/refresh-token.entity';
 import { Showtime } from '../../showtime/entities/showtime.entity';
 import { Reservation } from '../../reservation/entities/reservation.entity';
-import { SeatLock } from '../../reservation/entities/seat-locks.entity';
+import { SeatLock } from '../../reservation/entities/seat-lock.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
 import RoleSeeder from './seeds/role.seeder';

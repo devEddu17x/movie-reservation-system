@@ -3,7 +3,7 @@ import { BlackListRefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Genre } from 'src/movie/entities/genre.entity';
 import { Movie } from 'src/movie/entities/movie.entity';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
-import { SeatLock } from 'src/reservation/entities/seat-locks.entity';
+import { SeatLock } from 'src/reservation/entities/seat-lock.entity';
 import { Room } from 'src/room/entities/room.entity';
 import { Seat } from 'src/room/entities/seat.entity';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
