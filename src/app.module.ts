@@ -9,6 +9,7 @@ import { RoomModule } from './room/room.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ShowtimeModule } from './showtime/showtime.module';
+import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ShowtimeModule } from './showtime/showtime.module';
       errorMessage: 'Request limit exceeded',
     }),
     ScheduleModule.forRoot(),
+    ReservationModule,
   ],
 })
 export class AppModule {}
