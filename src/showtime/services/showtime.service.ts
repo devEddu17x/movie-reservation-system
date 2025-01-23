@@ -73,7 +73,7 @@ export class ShowtimeService {
   async createShowtime(showtime: CreateShowtimeDto): Promise<Showtime> {
     const [movie, room] = await Promise.all([
       await this.movieService.getMovie(showtime.movieId),
-      await this.roomService.getRoom(showtime.roomId),
+      await this.roomService.getRoomWithShowtimes(showtime.roomId),
     ]);
 
     // check if movie and room exist
