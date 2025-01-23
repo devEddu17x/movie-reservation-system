@@ -26,7 +26,9 @@ export class RoomService {
     }
   }
 
-  async getRoom(roomId: number): Promise<Room & { showtimes?: Showtime[] }> {
+  async getRoomWithShowtimes(
+    roomId: number,
+  ): Promise<Room & { showtimes?: Showtime[] }> {
     const [room, showtimes] = await Promise.all([
       await this.roomRepository.findOne({ where: { id: roomId } }),
       await this.getShowtimesInRoom(roomId),
