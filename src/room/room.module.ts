@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { SharedModule } from 'src/core/shared/shared.module';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
+import { SeatService } from './services/seat.service';
 
 @Module({
   imports: [SharedModule, TypeOrmModule.forFeature([Room, Showtime])],
-  providers: [RoomService],
+  providers: [RoomService, SeatService],
   controllers: [RoomController],
   exports: [RoomService],
 })
