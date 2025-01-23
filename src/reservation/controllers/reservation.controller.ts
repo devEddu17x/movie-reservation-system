@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   NotFoundException,
@@ -10,13 +11,23 @@ import {
 } from '@nestjs/common';
 import { ReservationService } from '../services/reservation.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { MakeReservationDTO } from '../dtos/make-reservation.dto';
 
 @Controller('reservation')
 @UseGuards(JwtAuthGuard)
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
   @Post()
-  async makeReservation() {}
+  async makeReservation(
+    @Body() makeReservation: MakeReservationDTO,
+    @Request() req: Request,
+  ) {
+    return null;
+    return await this.reservationService.makeReservation(
+      makeReservation,
+      (req as any).user.id,
+    );
+  }
   @Post('cancel')
   async cancelReservation() {}
   @Get('user')
