@@ -3,12 +3,15 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ShowtimeStatus } from '../enums/showtime-status.enum';
 import { User } from 'src/user/entities/user.entity';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
+import { Seat } from 'src/room/entities/seat.entity';
 
 @Entity()
 export class Reservation {
@@ -41,4 +44,17 @@ export class Reservation {
   @OneToOne(() => Showtime)
   @JoinColumn({ name: 'showtime_id' })
   showtime: Showtime;
+  @ManyToMany(() => Seat)
+  @JoinTable({
+    name: 'reservation_seat',
+    joinColumn: {
+      name: 'reservation_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'seat_id',
+      referencedColumnName: 'id',
+    },
+  })
+  seats: Seat[];
 }
