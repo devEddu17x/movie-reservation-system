@@ -6,11 +6,12 @@ import { Room } from './entities/room.entity';
 import { SharedModule } from 'src/core/shared/shared.module';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
 import { SeatService } from './services/seat.service';
+import { Seat } from './entities/seat.entity';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([Room, Showtime])],
+  imports: [SharedModule, TypeOrmModule.forFeature([Room, Showtime, Seat])],
   providers: [RoomService, SeatService],
   controllers: [RoomController],
-  exports: [RoomService],
+  exports: [RoomService, SeatService],
 })
 export class RoomModule {}
