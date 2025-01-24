@@ -6,7 +6,10 @@ import {
   Column,
   ManyToOne,
   Check,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Seat } from '../../room/entities/seat.entity';
 
 @Entity()
 @Check(`"end_date" > "start_date"`)
@@ -41,4 +44,9 @@ export class Showtime {
   movie: Movie;
   @ManyToOne(() => Room)
   room: Room;
+  @ManyToMany(() => Seat)
+  @JoinTable({
+    name: 'reservation_seats',
+  })
+  seats: Seat[];
 }
