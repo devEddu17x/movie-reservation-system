@@ -35,8 +35,8 @@ export class ReservationService {
     const [seatLocks, roomWithShowtimes, seatsInRoom] = await Promise.all([
       await this.seatLockRepository.find({
         where: {
-          seat: In(makeReservationDTO.seats),
           lockUntil: MoreThanOrEqual(new Date()),
+          seat: In(makeReservationDTO.seats),
         },
       }),
       await this.roomService.getRoomWithShowtimes(makeReservationDTO.roomId),
