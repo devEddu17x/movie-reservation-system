@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   NotFoundException,
@@ -30,6 +31,7 @@ export class ReservationController {
       HttpStatus.NOT_IMPLEMENTED,
     );
   }
+  @HttpCode(HttpStatus.OK)
   @Post('block')
   async reserveSeatsForUpcomingReservation(
     @Body() seatsToBlock: BlockSeatsDto,
@@ -50,6 +52,8 @@ export class ReservationController {
       reservedSeats,
     };
   }
+
+  @HttpCode(HttpStatus.OK)
   @Post('cancel')
   async cancelReservation() {}
   @Get('user')
