@@ -26,4 +26,13 @@ export class SeatService {
       throw new HttpException('Something went wrong', 500);
     }
   }
+
+  async getSeatsReservedForShowtime(showtimeId: string): Promise<Seat[]> {
+    return await this.seatRepository
+      .createQueryBuilder('seat')
+      .innerJoin('reservation_seat', 'rs', 'rs.seat_id = seat.id')
+      .innerJoin('reservation', 'r', 'r.id = rs.reservation_id')
+      .where('r.showtime_id = :showtimeId', { showtimeId })
+      .getMany();
+  }
 }
