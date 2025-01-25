@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Seat } from '../entities/seat.entity';
+import { ShowtimeStatus } from 'src/reservation/enums/showtime-status.enum';
 
 @Injectable()
 export class SeatService {
@@ -33,6 +34,9 @@ export class SeatService {
       .innerJoin('reservation_seat', 'rs', 'rs.seat_id = seat.id')
       .innerJoin('reservation', 'r', 'r.id = rs.reservation_id')
       .where('r.showtime_id = :showtimeId', { showtimeId })
+      .andWhere('r.status != :confirmedStatus', {
+        confirmedStatus: ShowtimeStatus.CONFIRMED,
+      })
       .getMany();
   }
 }
