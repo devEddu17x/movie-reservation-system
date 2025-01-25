@@ -33,7 +33,7 @@ export class ReservationService {
     // and then create a reservation with the seats that are being blocked
   }
 
-  async reserveSeatsForUpcomingReservation(
+  async blockSeatsForUpcomingReservation(
     seatsToReserve: BlockSeatsDto,
     userId: string,
   ): Promise<SeatLock[]> {

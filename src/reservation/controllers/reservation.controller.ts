@@ -36,7 +36,7 @@ export class ReservationController {
     @Request() req,
   ) {
     const reservedSeats =
-      await this.reservationService.reserveSeatsForUpcomingReservation(
+      await this.reservationService.blockSeatsForUpcomingReservation(
         seatsToBlock,
         req.user.id,
       );
