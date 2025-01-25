@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -12,6 +14,7 @@ import {
 import { ReservationService } from '../services/reservation.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MakeReservationDTO } from '../dtos/make-reservation.dto';
+import { BlockSeatsDto } from '../dtos/block-seats.dto';
 
 @Controller('reservation')
 @UseGuards(JwtAuthGuard)
@@ -22,11 +25,30 @@ export class ReservationController {
     @Body() makeReservation: MakeReservationDTO,
     @Request() req: Request,
   ) {
-    return null;
-    return await this.reservationService.makeReservation(
-      makeReservation,
-      (req as any).user.id,
+    throw new HttpException(
+      'This endpoint is not implemented yet',
+      HttpStatus.NOT_IMPLEMENTED,
     );
+  }
+  @Post('block')
+  async reserveSeatsForUpcomingReservation(
+    @Body() seatsToBlock: BlockSeatsDto,
+    @Request() req,
+  ) {
+    const reservedSeats =
+      await this.reservationService.reserveSeatsForUpcomingReservation(
+        seatsToBlock,
+        req.user.id,
+      );
+
+    if (!reservedSeats) {
+      throw new NotFoundException('Seats not found');
+    }
+
+    return {
+      message: 'Seats blocked for reservation',
+      reservedSeats,
+    };
   }
   @Post('cancel')
   async cancelReservation() {}

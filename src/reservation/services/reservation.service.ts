@@ -6,6 +6,9 @@ import { SeatLock } from '../entities/seat-lock.entity';
 import { MakeReservationDTO } from '../dtos/make-reservation.dto';
 import { RoomService } from 'src/room/services/room.service';
 import { SeatService } from 'src/room/services/seat.service';
+import { BlockSeatsDto } from '../dtos/block-seats.dto';
+import { Seat } from 'src/room/entities/seat.entity';
+import { getDatePlusFiveMinutes } from 'src/utils/plus-five-minutes';
 
 @Injectable()
 export class ReservationService {
@@ -18,104 +21,114 @@ export class ReservationService {
     // services
     private readonly roomService: RoomService,
     private readonly seatService: SeatService,
-
     // to run transactions
     private readonly dataSource: DataSource,
   ) {}
+
   async makeReservation(
     makeReservationDTO: MakeReservationDTO,
     userId: string,
   ) {
-    /**
-     * Get seats locks, room with showtimes and seats in room
-     * NOTE:
-     * this is helpful to check if some seat is blocked for an in coming reservation
-     * and if the room exists and if the showtime exists in the room
-     */
-    const [seatLocks, roomWithShowtimes, seatsInRoom] = await Promise.all([
+    // now this method must search for the seats that are being blocked
+    // and then create a reservation with the seats that are being blocked
+  }
+
+  async reserveSeatsForUpcomingReservation(
+    seatsToReserve: BlockSeatsDto,
+    userId: string,
+  ): Promise<SeatLock[]> {
+    // get seats that are currently blocked and seats in room provided
+    const [blockedSeats, roomWithShowtimes, seatsInRoom] = await Promise.all([
       await this.seatLockRepository.find({
         where: {
           lockUntil: MoreThanOrEqual(new Date()),
-          seat: In(makeReservationDTO.seats),
+          seat: In(seatsToReserve.seats),
         },
       }),
-      await this.roomService.getRoomWithShowtimes(makeReservationDTO.roomId),
-      await this.seatService.getSeats(makeReservationDTO.roomId),
+      await this.roomService.getRoomWithShowtimes(seatsToReserve.roomId),
+      await this.seatService.getSeats(seatsToReserve.roomId),
     ]);
+
+    // check if some seats are already blocked by another user
+    if (blockedSeats.length !== 0) {
+      throw new HttpException(
+        'Some seats are currently being blocked by another user',
+        409,
+      );
+    }
 
     // check if room exists
     if (!roomWithShowtimes) {
       throw new HttpException(
-        `Room with id [${makeReservationDTO.roomId}] not found`,
+        `Room with id [${seatsToReserve.roomId}] not found`,
         404,
       );
     }
-    // check if showtime exists in room
+
+    // check if is there any showtime in room
     if (!roomWithShowtimes.showtimes) {
       throw new HttpException('No showtimes found in room', 404);
     }
-
-    // check if some seat is blocked for an in coming reservation
-    if (seatLocks.length > 0) {
-      throw new HttpException(`Some seats are already reserved`, 409);
-    }
-
     // check if room includes showtime that user wants to reserve
     if (
       !roomWithShowtimes.showtimes
         .map((showtime) => showtime.id)
-        .includes(makeReservationDTO.showtimeId)
+        .includes(seatsToReserve.showtimeId)
     ) {
       throw new HttpException(
-        `Showtime with id [${makeReservationDTO.showtimeId}] not found in room`,
+        `Showtime with id [${seatsToReserve.showtimeId}] not found in room`,
         404,
       );
     }
-
-    // check if user selected some seats
-    if (makeReservationDTO.seats.length === 0) {
-      throw new HttpException('No seats selected', 400);
-    }
-
-    // check if the seats selected are not more than room owns
-    if (makeReservationDTO.seats.length > seatsInRoom.length) {
-      throw new HttpException('Invalid seat selection', 400);
-    }
-
     // check if the seats selected are valid (exist in room)
     const seatsIds = seatsInRoom.map((seat) => seat.id);
-    if (makeReservationDTO.seats.some((seatId) => !seatsIds.includes(seatId))) {
+    if (seatsToReserve.seats.some((seatId) => !seatsIds.includes(seatId))) {
       throw new HttpException(
-        'There is a seat that does not existis in room',
+        'There is one or more seats that does not existis in room',
         400,
       );
     }
 
-    // continue with verificaction of already reserved seats in entity ReservationSeats (entity not implemented yet)
-    let seatsLock = makeReservationDTO.seats.map((seatId) => ({
-      seatId,
-      showtimeId: makeReservationDTO.showtimeId,
-      userId,
-    }));
-    // starting transaction
+    // get seats reserved for showtime
+    const reservedSeats = await this.seatService.getSeatsReservedForShowtime(
+      seatsToReserve.showtimeId,
+    );
+    // check if some seats are already reserved from other users
+    if (
+      reservedSeats
+        .map((seat) => seat.id)
+        .some((seatId) => seatsToReserve.seats.includes(seatId))
+    ) {
+      throw new HttpException('Some seats are already reserved', 409);
+    }
+
+    // start transaction
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
+    const lockUntil = getDatePlusFiveMinutes();
+    const seatsToBlock = seatsToReserve.seats.map((seatId) => ({
+      seatId,
+      showtimeId: seatsToReserve.showtimeId,
+      userId,
+      lockUntil,
+    }));
+
     try {
-      // block seats are going to be reserved
-      seatsLock = await queryRunner.manager.save(SeatLock, seatsLock);
-      console.log(seatsLock);
-      // queryRunner.manager.save(Reservation, {
-      //   user: { id: userId },
-      //   showtime: { id: makeReservationDTO.showtimeId },
-      // });
+      const seatsBlocked = await queryRunner.manager.save(
+        SeatLock,
+        seatsToBlock,
+      );
+      await queryRunner.commitTransaction();
+      return seatsBlocked;
     } catch (error) {
-      queryRunner.rollbackTransaction();
-      throw new HttpException('Something went wrong', 500);
+      await queryRunner.rollbackTransaction();
     } finally {
-      queryRunner.release();
+      await queryRunner.release();
     }
   }
+
   async cancelReservation() {}
   async getReservation(id: string): Promise<Reservation | null> {
     try {
