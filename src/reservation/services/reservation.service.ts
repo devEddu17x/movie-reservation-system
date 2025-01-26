@@ -7,8 +7,10 @@ import { MakeReservationDTO } from '../dtos/make-reservation.dto';
 import { RoomService } from 'src/room/services/room.service';
 import { SeatService } from 'src/room/services/seat.service';
 import { BlockSeatsDto } from '../dtos/block-seats.dto';
-import { Seat } from 'src/room/entities/seat.entity';
 import { getDatePlusFiveMinutes } from 'src/utils/plus-five-minutes';
+import { SeatLockService } from './seat-lock.service';
+import { ShowtimeService } from 'src/showtime/services/showtime.service';
+import { ShowtimeStatus } from '../enums/showtime-status.enum';
 
 @Injectable()
 export class ReservationService {
@@ -16,11 +18,11 @@ export class ReservationService {
     // repositories
     @InjectRepository(Reservation)
     private readonly reservationRepository: Repository<Reservation>,
-    @InjectRepository(SeatLock)
-    private readonly seatLockRepository: Repository<SeatLock>,
     // services
     private readonly roomService: RoomService,
     private readonly seatService: SeatService,
+    private readonly seatLockService: SeatLockService,
+    private readonly showtimeService: ShowtimeService,
     // to run transactions
     private readonly dataSource: DataSource,
   ) {}
@@ -29,8 +31,33 @@ export class ReservationService {
     makeReservationDTO: MakeReservationDTO,
     userId: string,
   ) {
-    // now this method must search for the seats that are being blocked
-    // and then create a reservation with the seats that are being blocked
+    const seatsBlockedFromUser =
+      await this.seatLockService.getBlockedFromUser(userId);
+
+    const showtime = await this.showtimeService.getShowtime(
+      makeReservationDTO.showtimeId,
+    );
+
+    const totalPrice = showtime.seatPrice * seatsBlockedFromUser.length;
+    // calculate total price
+    const reservation = {
+      seats: seatsBlockedFromUser,
+      totalPrice,
+      user: { id: userId },
+      showtime: { id: makeReservationDTO.showtimeId },
+      status: ShowtimeStatus.PENDING,
+    };
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.save(Reservation, reservation);
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async blockSeatsForUpcomingReservation(
@@ -39,12 +66,7 @@ export class ReservationService {
   ): Promise<SeatLock[]> {
     // get seats that are currently blocked and seats in room provided
     const [blockedSeats, roomWithShowtimes, seatsInRoom] = await Promise.all([
-      await this.seatLockRepository.find({
-        where: {
-          lockUntil: MoreThanOrEqual(new Date()),
-          seat: In(seatsToReserve.seats),
-        },
-      }),
+      await this.seatLockService.getBlocked(seatsToReserve.seats),
       await this.roomService.getRoomWithShowtimes(seatsToReserve.roomId),
       await this.seatService.getSeats(seatsToReserve.roomId),
     ]);
