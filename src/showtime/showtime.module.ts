@@ -16,5 +16,6 @@ import { RoomModule } from 'src/room/room.module';
   ],
   providers: [ShowtimeService],
   controllers: [ShowtimeController],
+  exports: [ShowtimeService],
 })
 export class ShowtimeModule {}
