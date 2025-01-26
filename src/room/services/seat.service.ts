@@ -34,7 +34,7 @@ export class SeatService {
       .innerJoin('reservation_seat', 'rs', 'rs.seat_id = seat.id')
       .innerJoin('reservation', 'r', 'r.id = rs.reservation_id')
       .where('r.showtime_id = :showtimeId', { showtimeId })
-      .andWhere('r.status != :confirmedStatus', {
+      .andWhere('r.status = :confirmedStatus', {
         confirmedStatus: ShowtimeStatus.CONFIRMED,
       })
       .getMany();
