@@ -23,13 +23,25 @@ export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
   @Post()
   async makeReservation(
-    @Body() makeReservation: MakeReservationDTO,
+    @Body() makeReservationDTO: MakeReservationDTO,
     @Request() req: Request,
   ) {
-    throw new HttpException(
-      'This endpoint is not implemented yet',
-      HttpStatus.NOT_IMPLEMENTED,
+    const reservation = await this.reservationService.makeReservation(
+      makeReservationDTO,
+      (req as any).user.id,
     );
+
+    if (!reservation) {
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return {
+      message: 'Reservation made',
+      reservation: { ...reservation, seatsToPay: reservation.seats },
+    };
   }
   @HttpCode(HttpStatus.OK)
   @Post('block')

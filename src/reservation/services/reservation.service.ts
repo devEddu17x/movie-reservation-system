@@ -1,5 +1,5 @@
-import { HttpException, Injectable } from '@nestjs/common';
-import { DataSource, In, MoreThanOrEqual, Repository } from 'typeorm';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SeatLock } from '../entities/seat-lock.entity';
@@ -10,7 +10,7 @@ import { BlockSeatsDto } from '../dtos/block-seats.dto';
 import { getDatePlusFiveMinutes } from 'src/utils/plus-five-minutes';
 import { SeatLockService } from './seat-lock.service';
 import { ShowtimeService } from 'src/showtime/services/showtime.service';
-import { ShowtimeStatus } from '../enums/showtime-status.enum';
+import { ReservationStatus } from '../enums/showtime-status.enum';
 
 @Injectable()
 export class ReservationService {
@@ -30,13 +30,21 @@ export class ReservationService {
   async makeReservation(
     makeReservationDTO: MakeReservationDTO,
     userId: string,
-  ) {
-    const seatsBlockedFromUser =
-      await this.seatLockService.getBlockedFromUser(userId);
+  ): Promise<Reservation> {
+    const [seatsBlockedFromUser, showtime] = await Promise.all([
+      this.seatLockService.getBlockedFromUser(userId),
+      this.showtimeService.getShowtime(makeReservationDTO.showtimeId),
+    ]);
 
-    const showtime = await this.showtimeService.getShowtime(
-      makeReservationDTO.showtimeId,
-    );
+    if (!showtime) {
+      throw new NotFoundException('Showtime not found');
+    }
+    if (!seatsBlockedFromUser || seatsBlockedFromUser.length === 0) {
+      throw new HttpException(
+        'No seats blocked for user found. User needs to block seats, them will be reserved',
+        404,
+      );
+    }
 
     const totalPrice = showtime.seatPrice * seatsBlockedFromUser.length;
     // calculate total price
@@ -45,15 +53,24 @@ export class ReservationService {
       totalPrice,
       user: { id: userId },
       showtime: { id: makeReservationDTO.showtimeId },
-      status: ShowtimeStatus.PENDING,
+      status: ReservationStatus.PENDING,
     };
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.save(Reservation, reservation);
+      const savedReservation = await queryRunner.manager.save(
+        Reservation,
+        reservation,
+      );
+      // delete blocked seats from user
+      await queryRunner.manager.delete(SeatLock, {
+        userId,
+      });
       await queryRunner.commitTransaction();
+      return savedReservation;
     } catch (error) {
+      console.log(error);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();

@@ -7,7 +7,4 @@ export class MakeReservationDTO {
   @IsNotEmpty()
   @IsUUID()
   showtimeId: string;
-  @IsNotEmpty({ each: true })
-  @IsPositive({ each: true })
-  seats: number[];
 }

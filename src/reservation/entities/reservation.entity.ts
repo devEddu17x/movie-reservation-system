@@ -5,10 +5,10 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ShowtimeStatus } from '../enums/showtime-status.enum';
+import { ReservationStatus } from '../enums/showtime-status.enum';
 import { User } from 'src/user/entities/user.entity';
 import { Showtime } from 'src/showtime/entities/showtime.entity';
 import { Seat } from 'src/room/entities/seat.entity';
@@ -24,11 +24,11 @@ export class Reservation {
 
   @Column({
     type: 'enum',
-    enum: ShowtimeStatus,
-    default: ShowtimeStatus.PENDING,
+    enum: ReservationStatus,
+    default: ReservationStatus.PENDING,
     nullable: false,
   })
-  status: ShowtimeStatus;
+  status: ReservationStatus;
 
   @Column({
     name: 'total_price',
@@ -38,10 +38,10 @@ export class Reservation {
   })
   totalPrice: number;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
-  @OneToOne(() => Showtime)
+  @ManyToOne(() => Showtime)
   @JoinColumn({ name: 'showtime_id' })
   showtime: Showtime;
   @ManyToMany(() => Seat)
