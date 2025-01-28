@@ -10,6 +10,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ShowtimeModule } from './showtime/showtime.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ReservationModule } from './reservation/reservation.module';
     }),
     ScheduleModule.forRoot(),
     ReservationModule,
+    PaymentModule,
   ],
 })
 export class AppModule {}
