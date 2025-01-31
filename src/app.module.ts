@@ -22,6 +22,8 @@ import { PaymentModule } from './payment/payment.module';
     MovieModule,
     RoomModule,
     ShowtimeModule,
+    ReservationModule,
+    PaymentModule,
     ThrottlerModule.forRoot({
       throttlers: [
         { name: 'default', ttl: 1000, limit: 3 },
@@ -32,8 +34,6 @@ import { PaymentModule } from './payment/payment.module';
       errorMessage: 'Request limit exceeded',
     }),
     ScheduleModule.forRoot(),
-    ReservationModule,
-    PaymentModule,
   ],
 })
 export class AppModule {}
