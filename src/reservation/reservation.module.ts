@@ -18,5 +18,6 @@ import { ShowtimeModule } from 'src/showtime/showtime.module';
   ],
   providers: [ReservationService, SeatLockService],
   controllers: [ReservationController],
+  exports: [ReservationService],
 })
 export class ReservationModule {}
