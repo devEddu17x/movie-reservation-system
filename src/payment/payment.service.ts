@@ -55,10 +55,12 @@ export class PaymentService {
         body,
         prefer: 'return=minimal',
       });
-      console.log(paypalApiResponse);
-      return paypalApiResponse.result.links.find(
+
+      const url = paypalApiResponse.result.links.find(
         (link) => link.rel === 'approve',
       );
+
+      return { id: paypalApiResponse.result.id, url: url.href };
     } catch (error) {
       console.error(error);
       throw new Error('Something went wrong');

@@ -29,24 +29,28 @@ export class SeatService {
   }
 
   async getSeatsReservedForShowtime(showtimeId: string): Promise<Seat[]> {
-    return await this.seatRepository
-      .createQueryBuilder('seat')
-      .innerJoin('reservation_seat', 'rs', 'rs.seat_id = seat.id')
-      .innerJoin('reservation', 'r', 'r.id = rs.reservation_id')
-      .where('r.showtime_id = :showtimeId', { showtimeId })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where('r.status = :confirmedStatus', {
-            confirmedStatus: ReservationStatus.CONFIRMED,
-          }).orWhere(
-            // Only include pending reservations that are less than 5 minutes old
-            "r.status = :pendingStatus AND (NOW() - r.created_at) < INTERVAL '5 minutes'.",
-            {
-              pendingStatus: ReservationStatus.PENDING,
-            },
-          );
-        }),
-      )
-      .getMany();
+    try {
+      return await this.seatRepository
+        .createQueryBuilder('seat')
+        .innerJoin('reservation_seat', 'rs', 'rs.seat_id = seat.id')
+        .innerJoin('reservation', 'r', 'r.id = rs.reservation_id')
+        .where('r.showtime_id = :showtimeId', { showtimeId })
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where('r.status = :confirmedStatus', {
+              confirmedStatus: ReservationStatus.CONFIRMED,
+            }).orWhere(
+              // Only include pending reservations that are less than 5 minutes old
+              "r.status = :pendingStatus AND (NOW() - r.created_date) < INTERVAL '5 minutes'",
+              {
+                pendingStatus: ReservationStatus.PENDING,
+              },
+            );
+          }),
+        )
+        .getMany();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
