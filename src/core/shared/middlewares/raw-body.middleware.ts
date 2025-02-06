@@ -5,9 +5,11 @@ import * as bodyParser from 'body-parser';
 @Injectable()
 export class RawBodyMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    // Aplica express.raw solo para peticiones con Content-Type 'application/json'
+    // just for request with Content-Type 'application/json'
     bodyParser.raw({ type: 'application/json' })(req, res, () => {
-      // Una vez procesado, guarda el raw body en req.rawBody
+      if (!Buffer.isBuffer(req.body)) {
+        req.body = Buffer.from(JSON.stringify(req.body), 'utf-8');
+      }
       (req as any).rawBody = req.body;
       next();
     });
