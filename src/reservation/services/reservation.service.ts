@@ -171,14 +171,14 @@ export class ReservationService {
   async cancelReservation() {}
   async getReservation(id: string): Promise<Reservation | null> {
     try {
-      return this.reservationRepository.findOne({ where: { id } });
+      return await this.reservationRepository.findOne({ where: { id } });
     } catch (error) {
       throw new HttpException('Something went wrong', 500);
     }
   }
   async getReservationsFromUser(userId: string): Promise<Reservation[] | null> {
     try {
-      return this.reservationRepository.find({
+      return await this.reservationRepository.find({
         where: { user: { id: userId } },
       });
     } catch (error) {
