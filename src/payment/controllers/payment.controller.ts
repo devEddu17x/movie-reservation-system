@@ -1,12 +1,14 @@
 import {
   Controller,
+  Get,
   HttpException,
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { PaymentService } from '../payment.service';
+import { PaymentService } from '../services/payment.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -24,6 +26,22 @@ export class PaymentController {
     return {
       message: 'Url to pay with paypal',
       orderPaymentUrl,
+    };
+  }
+
+  @Get('return')
+  async returnFromPaypal(@Query('token') token: string) {
+    console.log('inside returnFromPaypal');
+    console.log('token\n', token);
+    const transactionCaptureResult =
+      await this.paymentService.captureOrder(token);
+    if (!transactionCaptureResult) {
+      throw new HttpException('Something went wrong', 500);
+    }
+
+    return {
+      message: 'Payment status',
+      paymentStatus: transactionCaptureResult,
     };
   }
 }
