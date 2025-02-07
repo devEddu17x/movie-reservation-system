@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ReservationService } from 'src/reservation/services/reservation.service';
 import {
@@ -8,11 +8,13 @@ import {
   Environment,
   AmountWithBreakdown,
   OrderRequest,
+  OrderApplicationContext,
 } from '@paypal/paypal-server-sdk';
 @Injectable()
 export class PaymentService {
   private readonly client: Client;
   private readonly ordersController: OrdersController;
+  private readonly RETURN_URL: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -28,6 +30,7 @@ export class PaymentService {
     });
 
     this.ordersController = new OrdersController(this.client);
+    this.RETURN_URL = configService.get<string>('paypal.returnUrl');
   }
 
   async createOrder(reservationId: string) {
@@ -42,6 +45,11 @@ export class PaymentService {
       currencyCode: 'USD',
       value: '' + reservation.totalPrice,
     };
+
+    const applicationContext: OrderApplicationContext = {
+      returnUrl: this.RETURN_URL,
+    };
+
     const body: OrderRequest = {
       intent: CheckoutPaymentIntent.Capture,
       purchaseUnits: [
@@ -49,6 +57,7 @@ export class PaymentService {
           amount,
         },
       ],
+      applicationContext,
     };
     try {
       const paypalApiResponse = await this.ordersController.ordersCreate({
@@ -64,6 +73,19 @@ export class PaymentService {
     } catch (error) {
       console.error(error);
       throw new Error('Something went wrong');
+    }
+  }
+
+  async captureOrder(token: string) {
+    try {
+      const response = await this.ordersController.ordersCapture({
+        id: token,
+      });
+
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('Failed to capture order', 500);
     }
   }
 }
