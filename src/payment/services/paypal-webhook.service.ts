@@ -5,13 +5,17 @@ import * as crypto from 'crypto';
 import crc32 from 'buffer-crc32';
 import { ConfigService } from '@nestjs/config';
 import { WebhookResponseDTO } from '../dtos/webhook-response.dto';
+import { HandleWebhooksEventsService } from './handle-webhooks-events.service';
 
 @Injectable()
 export class PaypalWebHookService {
   private readonly WEBHOOK_ID: string;
   private readonly CACHE_DIR = 'certs';
   private readonly logger = new Logger(PaypalWebHookService.name);
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly handlerWebhooksEventsService: HandleWebhooksEventsService,
+  ) {
     this.WEBHOOK_ID = this.configService.get<string>('paypal.webhookId');
   }
 
@@ -32,6 +36,10 @@ export class PaypalWebHookService {
         };
       }
       this.logger.log('Signature is valid.');
+      await this.handlerWebhooksEventsService.handleEvent(
+        data.event_type,
+        data,
+      );
       return {
         success: true,
       };
