@@ -54,6 +54,7 @@ export class PaymentService {
       intent: CheckoutPaymentIntent.Capture,
       purchaseUnits: [
         {
+          customId: reservationId,
           amount,
         },
       ],
