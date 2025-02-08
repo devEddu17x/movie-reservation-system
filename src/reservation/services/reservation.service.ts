@@ -185,4 +185,14 @@ export class ReservationService {
       throw new HttpException('Something went wrong', 500);
     }
   }
+
+  async confirmReservation(id: string) {
+    const result = await this.reservationRepository.update(id, {
+      status: ReservationStatus.CONFIRMED,
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Reservation not found');
+    }
+  }
 }
