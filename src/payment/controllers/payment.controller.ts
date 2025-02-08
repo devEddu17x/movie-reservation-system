@@ -17,8 +17,9 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post(':id')
-  async payWithPaypal(@Param('id', ParseUUIDPipe) id: string) {
-    const orderPaymentUrl = await this.paymentService.createOrder(id);
+  async payWithPaypal(@Param('id', ParseUUIDPipe) reservationId: string) {
+    const orderPaymentUrl =
+      await this.paymentService.createOrder(reservationId);
     if (!orderPaymentUrl) {
       throw new HttpException('Something went wrong', 500);
     }
