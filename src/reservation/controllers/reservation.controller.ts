@@ -68,7 +68,7 @@ export class ReservationController {
   @HttpCode(HttpStatus.OK)
   @Post('cancel')
   async cancelReservation() {}
-  @Get('user')
+  @Get('me')
   async getReservationsFromUser(@Request() req) {
     const reservations = await this.reservationService.getReservationsFromUser(
       req.user.id,
