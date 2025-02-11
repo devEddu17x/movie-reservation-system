@@ -1,10 +1,11 @@
 // paypal-webhook.controller.ts
-import { Controller, Post, Req, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Req, Res, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PaypalWebHookService } from '../services/paypal-webhook.service';
 
 @Controller('webhook/paypal')
 export class PaypalWebhookController {
+  private readonly logger = new Logger(PaypalWebhookController.name);
   constructor(private readonly paypalWebHookService: PaypalWebHookService) {}
 
   @Post()
@@ -14,6 +15,7 @@ export class PaypalWebhookController {
       req.headers,
     );
     if (result.success) {
+      this.logger.log('Webhook received and processed');
       res.status(HttpStatus.OK).send();
     } else {
       res.status(HttpStatus.BAD_REQUEST).send();
