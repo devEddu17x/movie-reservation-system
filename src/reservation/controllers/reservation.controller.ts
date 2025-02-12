@@ -76,6 +76,8 @@ export class ReservationController {
     if (!reservations) {
       throw new NotFoundException('Reservations from user not found');
     }
+
+    return reservations;
   }
   @Get(':id')
   async getReservation(@Param('id', ParseUUIDPipe) id: string) {
