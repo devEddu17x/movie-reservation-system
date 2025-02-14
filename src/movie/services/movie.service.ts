@@ -42,13 +42,13 @@ export class MovieService {
 
   async getMovie(id: string): Promise<Movie | null> {
     try {
-      const movie = await this.movieRepository.findOne({
-        where: { id },
-        relations: {
-          genres: true,
-          showtimes: true,
-        },
-      });
+      const movie = await this.movieRepository
+        .createQueryBuilder('movie')
+        .innerJoinAndSelect('movie.genres', 'genre')
+        .innerJoinAndSelect('movie.showtimes', 'showtime')
+        .where('movie.id = :id', { id })
+        .andWhere('showtime.start_date > NOW()')
+        .getOne();
 
       if (!movie || movie.status !== MovieStatus.AVAILABLE) {
         return null;
