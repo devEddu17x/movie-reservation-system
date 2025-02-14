@@ -11,11 +11,10 @@ import {
 import { PaymentService } from '../services/payment.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Post(':id')
   async payWithPaypal(@Param('id', ParseUUIDPipe) reservationId: string) {
     const orderPaymentUrl =
@@ -32,8 +31,6 @@ export class PaymentController {
 
   @Get('return')
   async returnFromPaypal(@Query('token') token: string) {
-    console.log('inside returnFromPaypal');
-    console.log('token\n', token);
     const transactionCaptureResult =
       await this.paymentService.captureOrder(token);
     if (!transactionCaptureResult) {
