@@ -18,7 +18,6 @@ export class PaymentService {
 
   constructor(
     private readonly configService: ConfigService,
-
     private readonly reservationService: ReservationService,
   ) {
     this.client = new Client({

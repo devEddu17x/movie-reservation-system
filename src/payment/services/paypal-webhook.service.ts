@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import fetch from 'node-fetch';
 import * as crypto from 'crypto';
-import crc32 from 'buffer-crc32';
+import * as crc32 from 'buffer-crc32';
 import { ConfigService } from '@nestjs/config';
 import { WebhookResponseDTO } from '../dtos/webhook-response.dto';
 import { HandleWebhooksEventsService } from './handle-webhooks-events.service';
@@ -45,6 +45,7 @@ export class PaypalWebHookService {
       };
     } catch (error) {
       this.logger.error(`Error processing webhook: ${error.message}`);
+      return { success: false, error: 'Error processing webhook' };
     }
   }
 

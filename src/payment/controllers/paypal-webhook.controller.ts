@@ -18,6 +18,8 @@ export class PaypalWebhookController {
       this.logger.log('Webhook received and processed');
       res.status(HttpStatus.OK).send();
     } else {
+      this.logger.error('Webhook processing failed');
+      this.logger.error(result.error);
       res.status(HttpStatus.BAD_REQUEST).send();
     }
   }
