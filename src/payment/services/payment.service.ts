@@ -84,7 +84,6 @@ export class PaymentService {
 
       return response;
     } catch (error) {
-      console.error(error);
       throw new HttpException('Failed to capture order', 500);
     }
   }
