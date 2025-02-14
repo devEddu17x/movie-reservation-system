@@ -72,7 +72,6 @@ export class PaymentService {
 
       return { id: paypalApiResponse.result.id, url: url.href };
     } catch (error) {
-      console.error(error);
       throw new Error('Something went wrong');
     }
   }
