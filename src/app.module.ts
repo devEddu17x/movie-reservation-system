@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ShowtimeModule } from './showtime/showtime.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { PaymentModule } from './payment/payment.module';
+import { ReportingModule } from './reporting/reporting.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaymentModule } from './payment/payment.module';
       errorMessage: 'Request limit exceeded',
     }),
     ScheduleModule.forRoot(),
+    ReportingModule,
   ],
 })
 export class AppModule {}
