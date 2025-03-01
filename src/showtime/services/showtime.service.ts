@@ -101,7 +101,7 @@ export class ShowtimeService {
 
     const showtimesInRoom = await this.showtimeRepository
       .createQueryBuilder('showtime')
-      .where('showtime.roomId = :roomId', { roomId: room.id })
+      .where('showtime.room_id = :roomId', { roomId: room.id })
       .andWhere(
         new Brackets((qb) => {
           qb.where('showtime.start_date BETWEEN :startDate AND :endDate', {

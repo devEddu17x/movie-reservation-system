@@ -6,6 +6,7 @@ import {
   Column,
   ManyToOne,
   Check,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -38,7 +39,9 @@ export class Showtime {
   seatPrice: number;
 
   @ManyToOne(() => Movie, (movie) => movie.showtimes)
+  @JoinColumn({ name: 'movie_id' })
   movie: Movie;
   @ManyToOne(() => Room)
+  @JoinColumn({ name: 'room_id' })
   room: Room;
 }
