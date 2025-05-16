@@ -9,7 +9,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - movie_reservation_system:/var/lib/postgresql/data
 
 volumes:
-  db-data:
+  movie_reservation_system:
+    name: movie_reservation_system_data
