@@ -45,9 +45,7 @@ export class MovieService {
       const movie = await this.movieRepository
         .createQueryBuilder('movie')
         .innerJoinAndSelect('movie.genres', 'genre')
-        .innerJoinAndSelect('movie.showtimes', 'showtime')
         .where('movie.id = :id', { id })
-        .andWhere('showtime.start_date > NOW()')
         .getOne();
 
       if (!movie || movie.status !== MovieStatus.AVAILABLE) {
