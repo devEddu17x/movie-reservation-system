@@ -47,6 +47,16 @@ export class RoomService {
     }
     return rooms;
   }
+  async getRoomSeats(id: number): Promise<Room> {
+    const room = await this.roomRepository.findOne({
+      where: { id },
+      relations: ['seats'],
+    });
+    if (!room) {
+      throw new HttpException('Room not found', 404);
+    }
+    return room;
+  }
 
   async getShowtimesInRoom(roomId: number): Promise<Showtime[]> {
     try {

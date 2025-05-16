@@ -35,6 +35,16 @@ export class RoomController {
     return room;
   }
 
+  @Get('/seats/:id')
+  async getRoomSeats(@Param('id', ParseIntPipe) roomId: number) {
+    const room = await this.roomService.getRoomSeats(roomId);
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    return room;
+  }
+
   @Get()
   async getRooms() {
     return await this.roomService.getRooms();
