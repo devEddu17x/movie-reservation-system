@@ -1,6 +1,6 @@
-import { Seat } from 'src/room/entities/seat.entity';
-import { Showtime } from 'src/showtime/entities/showtime.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Seat } from '../../room/entities/seat.entity';
+import { Showtime } from '../../showtime/entities/showtime.entity';
+import { User } from '../../user/entities/user.entity';
 import { Column, Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()

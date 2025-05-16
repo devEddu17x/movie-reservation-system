@@ -9,9 +9,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ReservationStatus } from '../enums/showtime-status.enum';
-import { User } from 'src/user/entities/user.entity';
-import { Showtime } from 'src/showtime/entities/showtime.entity';
-import { Seat } from 'src/room/entities/seat.entity';
+import { User } from '../../user/entities/user.entity';
+import { Showtime } from '../../showtime/entities/showtime.entity';
+import { Seat } from '../../room/entities/seat.entity';
 
 @Entity()
 export class Reservation {
