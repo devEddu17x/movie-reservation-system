@@ -15,12 +15,11 @@ import { Roles } from 'src/core/shared/decorators/roles.decorator';
 import { RoleType } from 'src/user/enums/role-type.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleType.ADMIN)
 @Controller('showtime')
 export class ShowtimeController {
   constructor(private readonly showtimeService: ShowtimeService) {}
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(RoleType.ADMIN)
   @Post()
   async createShowtime(@Body() createShowtimeDTO: CreateShowtimeDto) {
     const showtime =
