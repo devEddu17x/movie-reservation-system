@@ -6,18 +6,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { CreateRoomDto } from '../dto/create-room.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Roles } from 'src/core/shared/decorators/roles.decorator';
-import { RolesGuard } from 'src/core/shared/guards/roles.guard';
-import { RoleType } from 'src/user/enums/role-type.enum';
 import { RoomService } from '../services/room.service';
+import { UseAdminGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('room')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleType.ADMIN)
+@UseAdminGuard()
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
   @Post()

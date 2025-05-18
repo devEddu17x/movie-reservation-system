@@ -1,17 +1,13 @@
-import { Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Param, Patch } from '@nestjs/common';
 import { UserService } from '../services/user.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/core/shared/guards/roles.guard';
-import { Roles } from 'src/core/shared/decorators/roles.decorator';
-import { RoleType } from '../enums/role-type.enum';
+import { UseAdminGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Patch('promote/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleType.ADMIN)
+  @UseAdminGuard()
   async promoteUser(@Param('id') id: string): Promise<any> {
     const result = await this.userService.promoteToAdmin(id);
     return result.affected === 1

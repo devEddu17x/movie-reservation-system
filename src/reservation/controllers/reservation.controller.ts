@@ -10,15 +10,14 @@ import {
   ParseUUIDPipe,
   Post,
   Request,
-  UseGuards,
 } from '@nestjs/common';
 import { ReservationService } from '../services/reservation.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MakeReservationDTO } from '../dtos/make-reservation.dto';
 import { BlockSeatsDto } from '../dtos/block-seats.dto';
+import { UseUserGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('reservation')
-@UseGuards(JwtAuthGuard)
+@UseUserGuard()
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
   @Post()

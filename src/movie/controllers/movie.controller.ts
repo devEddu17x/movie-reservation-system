@@ -7,16 +7,12 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { MovieService } from '../services/movie.service';
 import { CreateMovieDTO } from '../dtos/create-movie.dto';
-import { Roles } from 'src/core/shared/decorators/roles.decorator';
-import { RoleType } from 'src/user/enums/role-type.enum';
-import { RolesGuard } from 'src/core/shared/guards/roles.guard';
 import { UpdateMovieDTO } from '../dtos/update-movie.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Movie } from '../entities/movie.entity';
+import { UseAdminGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('movie')
 export class MovieController {
@@ -41,8 +37,7 @@ export class MovieController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleType.ADMIN)
+  @UseAdminGuard()
   async createMovie(@Body() movie: CreateMovieDTO) {
     const createdMovie = await this.movieService.createMovie(movie);
     return {
@@ -52,8 +47,7 @@ export class MovieController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleType.ADMIN)
+  @UseAdminGuard()
   async updateMovie(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() movie: UpdateMovieDTO,

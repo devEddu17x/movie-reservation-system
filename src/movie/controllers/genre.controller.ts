@@ -6,15 +6,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { GenreService } from '../services/genre.service';
 import { CreateGenreDTO } from '../dtos/create-genre.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/core/shared/guards/roles.guard';
-import { Roles } from 'src/core/shared/decorators/roles.decorator';
-import { RoleType } from 'src/user/enums/role-type.enum';
 import { UpdateGenreDTO } from '../dtos/update-genre.dto';
+import { UseAdminGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('genre')
 export class GenreController {
@@ -32,8 +28,7 @@ export class GenreController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleType.ADMIN)
+  @UseAdminGuard()
   async createGenre(@Body() genre: CreateGenreDTO): Promise<any> {
     const result = await this.genreService.createGenre(genre);
     return {
@@ -41,9 +36,9 @@ export class GenreController {
       data: { id: result.identifiers[0].id },
     };
   }
+
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleType.ADMIN)
+  @UseAdminGuard()
   async updateGenre(
     @Param('id', ParseIntPipe) id: number,
     @Body() genre: UpdateGenreDTO,

@@ -6,17 +6,18 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { PaymentService } from '../services/payment.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseUserGuard } from 'src/core/shared/decorators/protected.decorator';
 
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
-  @UseGuards(JwtAuthGuard)
-  @Post(':id')
-  async payWithPaypal(@Param('id', ParseUUIDPipe) reservationId: string) {
+  @UseUserGuard()
+  @Post(':reservation_id')
+  async payWithPaypal(
+    @Param('reservation_id', ParseUUIDPipe) reservationId: string,
+  ) {
     const orderPaymentUrl =
       await this.paymentService.createOrder(reservationId);
     if (!orderPaymentUrl) {
