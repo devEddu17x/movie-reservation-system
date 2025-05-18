@@ -21,6 +21,7 @@ async function bootstrap() {
   app.use(morgan('dev'));
 
   const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Movie Reservation System API')
     .setDescription('API documentation for the Movie Reservation System')
     .setVersion('1.0')
