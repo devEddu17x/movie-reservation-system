@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   Request,
   Res,
@@ -32,6 +34,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(
     @Body() authData: AuthLoginDTO,
     @Res({ passthrough: true }) res: Response,
@@ -45,6 +48,7 @@ export class AuthController {
   }
 
   @Post('refresh-tokens')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtRefreshAuthGuard)
   async refreshToken(
     @Request() req: ExpressRequest,

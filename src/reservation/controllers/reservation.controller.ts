@@ -43,8 +43,8 @@ export class ReservationController {
       reservation: { ...reservation, seatsToPay: reservation.seats },
     };
   }
-  @HttpCode(HttpStatus.OK)
   @Post('block')
+  @HttpCode(HttpStatus.OK)
   async reserveSeatsForUpcomingReservation(
     @Body() seatsToBlock: BlockSeatsDto,
     @Request() req,
@@ -65,8 +65,8 @@ export class ReservationController {
     };
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('cancel')
+  @HttpCode(HttpStatus.OK)
   async cancelReservation() {}
   @Get('me')
   async getReservationsFromUser(@Request() req) {

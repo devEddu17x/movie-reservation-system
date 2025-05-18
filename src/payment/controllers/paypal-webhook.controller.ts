@@ -1,5 +1,13 @@
 // paypal-webhook.controller.ts
-import { Controller, Post, Req, Res, HttpStatus, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  Res,
+  HttpStatus,
+  Logger,
+  HttpCode,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PaypalWebHookService } from '../services/paypal-webhook.service';
 
@@ -9,6 +17,7 @@ export class PaypalWebhookController {
   constructor(private readonly paypalWebHookService: PaypalWebHookService) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async webhookReceiver(@Req() req: Request, @Res() res: Response) {
     const result = await this.paypalWebHookService.handleWebhook(
       (req as any).rawBody,
