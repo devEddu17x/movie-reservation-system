@@ -24,7 +24,6 @@ async function bootstrap() {
     .setTitle('Movie Reservation System API')
     .setDescription('API documentation for the Movie Reservation System')
     .setVersion('1.0')
-    .addTag('movies')
     .build();
 
   const documentFactory = () =>
